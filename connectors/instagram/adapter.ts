@@ -1,30 +1,25 @@
 import { z } from "zod";
-import { resolveCredential } from "../../core/auth-vault/index.js";
+import { getOAuthToken } from "../../core/auth-vault/token-store.js";
 import type { ToolInvocationResult } from "../../core/domain/schemas.js";
 import type { Connector, ConnectorContext, HealthStatus } from "../../core/ports/connector.js";
 
 /**
- * Instagram コネクタ。実体は Zernio (https://zernio.com) の統一投稿API。
- * Zernio 1アカウントで複数クライアントのInstagramプロフィールを束ねる運用を想定し、
- * APIキーはコネクタ単位の vault://instagram/api_key を使う（顧客ごとの account_id で対象を切り替える）。
- * 顧客ごとに別々のZernioアカウントを使う場合は customers/<name>/config.yaml の
- * credentials.instagram を経由する形に変更すること（現状は未対応、BACKLOG参照）。
+ * Instagram コネクタ。Meta Graph API (Instagram API with Instagram Login) に直接投稿する。
+ * 顧客はGraph APIトークンを扱わず、`GET /oauth/instagram/start?customer=<name>` を
+ * ブラウザで開いてログインするだけで連携が完了する（interfaces/oauth/instagram-connect.ts）。
+ * 連携済みトークンは core/auth-vault/token-store が暗号化保存し、ここでは読むだけ。
  */
-const ZERNIO_BASE_URL = "https://zernio.com/api/v1";
+const GRAPH_API_BASE = "https://graph.instagram.com/v21.0";
+const CONTAINER_POLL_ATTEMPTS = 10;
+const CONTAINER_POLL_INTERVAL_MS = 2000;
 
 const PostCreateArgs = z.object({
-  account_id: z.string(),
   caption: z.string().max(2200),
   media: z
     .array(z.object({ url: z.string().url(), type: z.enum(["image", "video"]) }))
     .min(1)
     .max(10),
   first_comment: z.string().optional(),
-});
-
-const ZernioPostResponse = z.object({
-  id: z.string().optional(),
-  status: z.string().optional(),
 });
 
 const adapter: Connector = {
@@ -46,16 +41,15 @@ const adapter: Connector = {
   },
 
   async healthCheck(): Promise<HealthStatus> {
-    try {
-      const apiKey = resolveCredential("vault://instagram/api_key");
-      // GET /v1/posts は一覧取得の確認済みエンドポイント。存在確認代わりに軽量に叩く。
-      const res = await fetch(`${ZERNIO_BASE_URL}/posts?limit=1`, {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      return { platform: "instagram", healthy: res.ok, detail: res.ok ? undefined : `zernio status ${res.status}` };
-    } catch (err) {
-      return { platform: "instagram", healthy: false, detail: err instanceof Error ? err.message : String(err) };
+    const missing = ["INSTAGRAM_APP_ID", "INSTAGRAM_APP_SECRET", "MUSUBI_PUBLIC_BASE_URL", "OAUTH_STATE_SECRET"].filter(
+      (name) => !process.env[name],
+    );
+    if (missing.length > 0) {
+      return { platform: "instagram", healthy: false, detail: `未設定の環境変数: ${missing.join(", ")}` };
     }
+    // 顧客個別のトークンはここでは検証しない（customer文脈が無いため）。
+    // 実際の疎通は musubi.connector.smoke や個別顧客での投稿確認で行う。
+    return { platform: "instagram", healthy: true };
   },
 };
 
@@ -63,40 +57,128 @@ async function createPost(
   args: z.infer<typeof PostCreateArgs>,
   ctx: ConnectorContext,
 ): Promise<ToolInvocationResult> {
-  const requestBody = {
-    content: args.caption,
-    mediaItems: args.media.map((m) => ({ url: m.url, type: m.type })),
-    platforms: [
-      {
-        platform: "instagram",
-        accountId: args.account_id,
-        ...(args.first_comment ? { platformSpecificData: { firstComment: args.first_comment } } : {}),
+  const token = await getOAuthToken(ctx.customer, "instagram");
+  if (!token) {
+    return {
+      ok: false,
+      error: {
+        code: "AUTH_EXPIRED",
+        message: `no connected instagram account for customer ${ctx.customer}`,
+        retriable: false,
+        hint: `顧客がまだInstagramを連携していません。/oauth/instagram/start?customer=${ctx.customer} をブラウザで開いて連携してください`,
       },
-    ],
-    publishNow: true,
-  };
+    };
+  }
 
   if (ctx.dryRun) {
-    return { ok: true, data: { dry_run: true, would_send: requestBody } };
+    return {
+      ok: true,
+      data: {
+        dry_run: true,
+        would_post_as: token.accountName,
+        account_id: token.accountId,
+        caption: args.caption,
+        media: args.media,
+      },
+    };
   }
 
-  const apiKey = resolveCredential("vault://instagram/api_key");
-  const res = await fetch(`${ZERNIO_BASE_URL}/posts`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify(requestBody),
+  const accessToken = token.accessToken;
+  const igUserId = token.accountId;
+
+  const childIds =
+    args.media.length > 1
+      ? await Promise.all(args.media.map((m) => createContainer(igUserId, accessToken, m, { isCarouselItem: true })))
+      : undefined;
+
+  const containerId = childIds
+    ? await createCarouselContainer(igUserId, accessToken, childIds, args.caption)
+    : await createContainer(igUserId, accessToken, args.media[0], { caption: args.caption });
+
+  await waitUntilReady(containerId, accessToken);
+  const mediaId = await publishContainer(igUserId, accessToken, containerId);
+
+  if (args.first_comment) {
+    await postComment(mediaId, accessToken, args.first_comment).catch(() => undefined);
+  }
+
+  return { ok: true, data: { media_id: mediaId, account_id: igUserId } };
+}
+
+async function createContainer(
+  igUserId: string,
+  accessToken: string,
+  media: { url: string; type: "image" | "video" },
+  opts: { caption?: string; isCarouselItem?: boolean },
+): Promise<string> {
+  const params = new URLSearchParams({ access_token: accessToken });
+  if (media.type === "image") params.set("image_url", media.url);
+  else {
+    params.set("video_url", media.url);
+    if (!opts.isCarouselItem) params.set("media_type", "VIDEO");
+  }
+  if (opts.isCarouselItem) params.set("is_carousel_item", "true");
+  if (opts.caption) params.set("caption", opts.caption);
+
+  const body = await graphPost(`${igUserId}/media`, params);
+  return body.id as string;
+}
+
+async function createCarouselContainer(
+  igUserId: string,
+  accessToken: string,
+  childIds: string[],
+  caption: string,
+): Promise<string> {
+  const params = new URLSearchParams({
+    access_token: accessToken,
+    media_type: "CAROUSEL",
+    children: childIds.join(","),
+    caption,
   });
+  const body = await graphPost(`${igUserId}/media`, params);
+  return body.id as string;
+}
 
-  const rawBody = await res.json().catch(() => undefined);
-  if (!res.ok) {
-    throw Object.assign(new Error(`zernio posts API returned ${res.status}: ${JSON.stringify(rawBody)}`), {
-      status: res.status,
-    });
+async function publishContainer(igUserId: string, accessToken: string, containerId: string): Promise<string> {
+  const params = new URLSearchParams({ access_token: accessToken, creation_id: containerId });
+  const body = await graphPost(`${igUserId}/media_publish`, params);
+  return body.id as string;
+}
+
+async function waitUntilReady(containerId: string, accessToken: string): Promise<void> {
+  for (let attempt = 0; attempt < CONTAINER_POLL_ATTEMPTS; attempt += 1) {
+    const url = new URL(`${GRAPH_API_BASE}/${containerId}`);
+    url.searchParams.set("fields", "status_code");
+    url.searchParams.set("access_token", accessToken);
+    const res = await fetch(url);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throwGraphError(res.status, body);
+
+    const status = (body as { status_code?: string }).status_code;
+    if (status === "FINISHED") return;
+    if (status === "ERROR" || status === "EXPIRED") {
+      throw Object.assign(new Error(`instagram media container ${status}`), { status: 502 });
+    }
+    await new Promise((resolve) => setTimeout(resolve, CONTAINER_POLL_INTERVAL_MS));
   }
+  throw Object.assign(new Error("instagram media container did not finish processing in time"), { status: 504 });
+}
 
-  // §8.4: 外部APIの応答は境界で自前検証してから正規化する。
-  const parsed = ZernioPostResponse.parse(rawBody);
-  return { ok: true, data: { post_id: parsed.id, status: parsed.status ?? "submitted" } };
+async function postComment(mediaId: string, accessToken: string, message: string): Promise<void> {
+  const params = new URLSearchParams({ access_token: accessToken, message });
+  await graphPost(`${mediaId}/comments`, params);
+}
+
+async function graphPost(path: string, params: URLSearchParams): Promise<Record<string, unknown>> {
+  const res = await fetch(`${GRAPH_API_BASE}/${path}`, { method: "POST", body: params });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throwGraphError(res.status, body);
+  return body as Record<string, unknown>;
+}
+
+function throwGraphError(status: number, body: unknown): never {
+  throw Object.assign(new Error(`instagram graph api error (${status}): ${JSON.stringify(body)}`), { status });
 }
 
 export default adapter;

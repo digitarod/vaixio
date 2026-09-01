@@ -1,13 +1,13 @@
 {
   "platform": "instagram",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "tools": [
     {
       "name": "instagram.post.create",
-      "description": "Zernio (https://zernio.com) 経由でInstagramのフィードに画像/動画+キャプションを投稿する",
+      "description": "顧客がOAuthで連携済みのInstagramアカウントのフィードに画像/動画+キャプションを投稿する（Meta Graph API直接呼び出し）",
       "inputSchema": "schemas/post-create.json",
       "destructive": true
     }
   ],
-  "auth": { "type": "zernio_api_key" }
+  "auth": { "type": "oauth2_instagram_login" }
 }

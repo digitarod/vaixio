@@ -1,12 +1,13 @@
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
 import { loadConnectors } from "../../core/registry/index.js";
 import { Router } from "../../core/router/index.js";
+import { mountInstagramOAuth } from "../oauth/instagram-connect.js";
 import { mountRest } from "../rest/mount.js";
 import { mountMcp } from "./mount.js";
 
 /**
- * エントリーポイント。§2の主入口(MCP)・副入口(REST)を同一プロセスで起動する。
- * 実体は interfaces/mcp/mount.ts と interfaces/rest/mount.ts（§10: MCP仕様変化はここに隔離）。
+ * エントリーポイント。§2の主入口(MCP)・副入口(REST)・OAuth連携用Webフローを同一プロセスで起動する。
+ * 実体は interfaces/mcp/mount.ts, interfaces/rest/mount.ts, interfaces/oauth/*（§10: 仕様変化はここに隔離）。
  */
 async function main(): Promise<void> {
   const connectors = await loadConnectors();
@@ -18,6 +19,7 @@ async function main(): Promise<void> {
 
   mountMcp(app, router);
   mountRest(app, router);
+  mountInstagramOAuth(app);
 
   const port = Number(process.env.PORT ?? 3000);
   app.listen(port, host);

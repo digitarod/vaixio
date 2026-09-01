@@ -90,6 +90,21 @@ export const CustomerConfig = z.object({
 export type CustomerConfig = z.infer<typeof CustomerConfig>;
 
 /**
+ * OAuthで顧客が自己連携したプラットフォームアカウントのトークン記録。
+ * 顧客がGraph APIトークンを直接扱わずに済むよう、auth-vaultのtoken-storeが暗号化保存する。
+ */
+export const OAuthTokenRecord = z.object({
+  platform: z.string(),
+  customer: z.string(),
+  accessToken: z.string(),
+  accountId: z.string(),
+  accountName: z.string().optional(),
+  obtainedAt: z.string(),
+  expiresAt: z.string().nullable(),
+});
+export type OAuthTokenRecord = z.infer<typeof OAuthTokenRecord>;
+
+/**
  * §6.1 全リクエストに付与する trace 付き構造化ログの1行。
  */
 export const LogEntry = z.object({

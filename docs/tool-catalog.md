@@ -6,7 +6,7 @@
 
 ### `instagram.post.create`
 
-Zernio (https://zernio.com) 経由でInstagramのフィードに画像/動画+キャプションを投稿する
+顧客がOAuthで連携済みのInstagramアカウントのフィードに画像/動画+キャプションを投稿する（Meta Graph API直接呼び出し）
 
 - destructive: true
 - inputSchema:
@@ -14,10 +14,6 @@ Zernio (https://zernio.com) 経由でInstagramのフィードに画像/動画+�
 {
   "type": "object",
   "properties": {
-    "account_id": {
-      "type": "string",
-      "description": "Zernioダッシュボードで連携済みのInstagramビジネス/クリエイターアカウントのID"
-    },
     "caption": {
       "type": "string",
       "description": "投稿キャプション。最大2200文字（最初の125文字だけが折り畳み前に表示される）",
@@ -34,7 +30,7 @@ Zernio (https://zernio.com) 経由でInstagramのフィードに画像/動画+�
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "公開アクセス可能なCDN URL（Google Drive/Dropbox/OneDriveの共有リンクは不可。画像8MB以内推奨）"
+            "description": "公開アクセス可能なCDN URL（Google Drive/Dropbox/OneDriveの共有リンクは不可）"
           },
           "type": {
             "type": "string",
@@ -57,11 +53,10 @@ Zernio (https://zernio.com) 経由でInstagramのフィードに画像/動画+�
     },
     "dry_run": {
       "type": "boolean",
-      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合 Zernio へは送信せずリクエスト内容のプレビューのみ返す"
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合 Instagram へは投稿せずプレビューのみ返す"
     }
   },
   "required": [
-    "account_id",
     "caption",
     "media"
   ],
