@@ -1,0 +1,46 @@
+{
+  "name": "musubi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "サービスとAIエージェントを「結ぶ」統合ハブ（MCPファースト）",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx watch interfaces/mcp/server.ts",
+    "start": "tsx interfaces/mcp/server.ts",
+    "docs:gen": "tsx scripts/generate-docs.ts",
+    "new-connector": "tsx tools/scaffold/new-connector.ts",
+    "lint": "eslint .",
+    "check:boundaries": "tsx scripts/check-boundaries.ts",
+    "check:core-freeze": "tsx scripts/check-core-freeze.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "ajv": "^8.20.0",
+    "express": "^4.19.2",
+    "js-yaml": "^4.1.0",
+    "tsx": "^4.16.2",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.2"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9.6.1",
+    "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "eslint": "^8.57.0",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-boundaries": "^4.2.2",
+    "eslint-plugin-import": "^2.32.0",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.3"
+  }
+}

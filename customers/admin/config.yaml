@@ -1,0 +1,14 @@
+# 管理者スコープ。ハブ自身の自己診断ツール（§6.4）専用。
+# Bearer トークンは vault://admin/mcp_token → 環境変数 VAULT__ADMIN__MCP_TOKEN で注入する。
+customer: admin
+mcp_path: /mcp/admin
+allowed_tools:
+  - musubi.health
+  - musubi.errors.recent
+  - musubi.trace.get
+  - musubi.replay
+  - musubi.connector.smoke
+credentials: {}
+confirm_policy:
+  destructive: dry_run_first
+audit: true

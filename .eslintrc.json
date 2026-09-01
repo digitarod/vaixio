@@ -1,0 +1,47 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": { "sourceType": "module", "ecmaVersion": 2022 },
+  "plugins": ["@typescript-eslint", "boundaries"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "env": { "node": true, "es2022": true },
+  "ignorePatterns": ["dist/", "node_modules/", "tools/scaffold/template/**"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    },
+    "boundaries/elements": [
+      { "type": "core", "pattern": "core/*", "mode": "folder" },
+      { "type": "connectors", "pattern": "connectors/*", "mode": "folder", "capture": ["connector"] },
+      { "type": "interfaces", "pattern": "interfaces/*", "mode": "folder" }
+    ]
+  },
+  "rules": {
+    "no-console": "error",
+    "max-lines": ["warn", { "max": 200, "skipBlankLines": true, "skipComments": true }],
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "boundaries/element-types": [
+      "error",
+      {
+        "default": "disallow",
+        "message": "§8.1: connectors は core(ports/domain) のみ許可。connector間・interfaces→connector直接参照は禁止です",
+        "rules": [
+          { "from": "core", "allow": ["core"] },
+          { "from": "connectors", "allow": ["core"] },
+          { "from": "interfaces", "allow": ["core", "interfaces"] }
+        ]
+      }
+    ],
+    "boundaries/no-private": ["error", { "message": "他コネクタの内部実装への直接参照は禁止です(§8.1)" }]
+  },
+  "overrides": [
+    {
+      "files": ["scripts/**/*.ts", "tools/**/*.ts", "**/*.test.ts"],
+      "rules": {
+        "no-console": "off",
+        "max-lines": "off",
+        "boundaries/element-types": "off"
+      }
+    }
+  ]
+}

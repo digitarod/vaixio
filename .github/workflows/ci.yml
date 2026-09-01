@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: lint（境界ルール含む）
+        run: npm run lint
+
+      - name: check:boundaries（§8.1 依存方向）
+        run: npm run check:boundaries
+
+      - name: check:core-freeze（§8.2 コア凍結）
+        if: github.event_name == 'pull_request'
+        run: npm run check:core-freeze
+
+      - name: 型チェック
+        run: npm run build
+
+      - name: 共通コントラクト＋fixtureテスト
+        run: npm test

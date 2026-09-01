@@ -1,0 +1,17 @@
+services:
+  musubi:
+    build: .
+    image: musubi:local
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - MUSUBI_HOST=0.0.0.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./customers:/app/customers:ro
+      - ./connectors:/app/connectors:ro
+    # 本番は既存 Traefik（触らない）配下に musubi サービスとして参加させる想定。
+    # ローカル確認用にポートを直接公開している。
