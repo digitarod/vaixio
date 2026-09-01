@@ -9,8 +9,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx watch interfaces/mcp/server.ts",
-    "start": "tsx interfaces/mcp/server.ts",
+    "dev": "tsx --env-file-if-exists=.env watch interfaces/mcp/server.ts",
+    "start": "tsx --env-file-if-exists=.env interfaces/mcp/server.ts",
     "docs:gen": "tsx scripts/generate-docs.ts",
     "new-connector": "tsx tools/scaffold/new-connector.ts",
     "lint": "eslint .",
@@ -18,7 +18,7 @@
     "check:core-freeze": "tsx scripts/check-core-freeze.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx --env-file-if-exists=.env scripts/smoke.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

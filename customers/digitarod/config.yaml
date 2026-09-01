@@ -1,0 +1,8 @@
+customer: digitarod
+mcp_path: /mcp/digitarod
+allowed_tools:
+  - instagram.post.create
+credentials: {}
+confirm_policy:
+  destructive: dry_run_first
+audit: true
