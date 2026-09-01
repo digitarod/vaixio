@@ -1,6 +1,5 @@
 import { readFile, readdir, access } from "node:fs/promises";
 import { join } from "node:path";
-import { pathToFileURL } from "node:url";
 import { RawConnectorManifest, type ConnectorManifest, type ToolDefinition } from "../domain/schemas.js";
 import type { Connector } from "../ports/connector.js";
 
@@ -49,7 +48,9 @@ async function loadAdapter(connectorDir: string): Promise<Connector> {
   for (const filename of ["adapter.js", "adapter.ts"]) {
     const candidate = join(connectorDir, filename);
     if (await exists(candidate)) {
-      const mod = (await import(pathToFileURL(candidate).href)) as { default: Connector };
+      // 絶対パスの文字列をそのまま渡す。pathToFileURL() 経由にすると、
+      // リポジトリパスに非ASCII文字が含まれる環境で Vite(vitest) の解決に失敗するため。
+      const mod = (await import(/* @vite-ignore */ candidate)) as { default: Connector };
       return mod.default;
     }
   }
