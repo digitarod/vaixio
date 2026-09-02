@@ -3,3 +3,4 @@
 このファイルは自動生成です。
 
 - admin
+- digitarod

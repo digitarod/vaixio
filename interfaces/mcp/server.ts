@@ -2,6 +2,7 @@ import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js
 import { loadConnectors } from "../../core/registry/index.js";
 import { Router } from "../../core/router/index.js";
 import { mountInstagramOAuth } from "../oauth/instagram-connect.js";
+import { startInstagramTokenRefreshJob } from "../oauth/instagram-refresh-job.js";
 import { mountRest } from "../rest/mount.js";
 import { mountMcp } from "./mount.js";
 
@@ -20,6 +21,7 @@ async function main(): Promise<void> {
   mountMcp(app, router);
   mountRest(app, router);
   mountInstagramOAuth(app);
+  startInstagramTokenRefreshJob();
 
   const port = Number(process.env.PORT ?? 3000);
   app.listen(port, host);

@@ -114,11 +114,16 @@ async function exchangeCodeForToken(code: string): Promise<{ access_token: strin
     code,
   });
   const res = await fetch("https://api.instagram.com/oauth/access_token", { method: "POST", body: form });
-  if (!res.ok) throw new Error(`code exchange failed: ${res.status} ${await res.text()}`);
-  const body = (await res.json()) as { data: { access_token: string }[] };
-  const first = body.data?.[0];
-  if (!first) throw new Error("code exchange returned no token");
-  return first;
+  const body = (await res.json().catch(() => undefined)) as
+    | { data: { access_token: string }[] }
+    | { access_token: string }
+    | undefined;
+  if (!res.ok) throw new Error(`code exchange failed: ${res.status} ${JSON.stringify(body)}`);
+
+  // Metaの応答形は data配列でラップされる場合とフラットな場合の両方が観測されているため両対応する。
+  const accessToken = body && "data" in body ? body.data?.[0]?.access_token : body?.access_token;
+  if (!accessToken) throw new Error(`code exchange returned no token: ${JSON.stringify(body)}`);
+  return { access_token: accessToken };
 }
 
 async function exchangeForLongLivedToken(shortLivedToken: string): Promise<{ access_token: string; expires_in: number }> {

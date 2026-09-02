@@ -22,12 +22,13 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 - [x] `core/auth-vault/token-store.ts`: OAuthで取得したアクセストークンをAES-256-GCMで暗号化しローカルファイル(`data/oauth-tokens.enc.json`)に保存
 - [x] fixtureテスト（未連携時のAUTH_EXPIRED / dry_run / 正常系(コンテナ作成→ステータス確認→publish) / エラー系 / 未知ツール）
 - [x] 手動確認: OAuth startのリダイレクトURL生成、不正state拒否、トークン未連携時のエラーメッセージ、連携済み想定でのdry_runプレビュー
-- [ ] **Facebook Developerでアプリを作成し、App ID/Secretを取得する（ユーザー側の作業、下記手順参照）**
-- [ ] 実際にOAuthでInstagramアカウントを連携し、本番投稿まで確認（`npm run smoke -- instagram`）
-- [ ] customers/<実際の顧客名>/config.yaml を用意して MCP E2E 確認
-- [ ] 拡張予定（ユーザーからの要望あり）: ストーリー/リール投稿、DM自動応答（webhook受信）
-- [ ] トークンの自動リフレッシュ（60日長期トークンの期限が近づいたら `GET https://graph.instagram.com/refresh_access_token` で更新）は未実装。今は期限切れ後に再度OAuth連携が必要
+- [x] Facebook Developerでアプリを作成し、App ID/Secretを取得（ユーザー側完了）
+- [x] 実際にOAuthで @digitarod のInstagramアカウントを連携し、本番投稿まで確認（media_id取得済み。ローカルではngrokで一時トンネルして検証。cloudflaredの無料クイックトンネルは実際のリダイレクト経路で502が頻発したため、ngrok(認証あり)に切り替えて解決した）
+- [x] トークンの自動リフレッシュ: `interfaces/oauth/instagram-refresh-job.ts`。60日長期トークンの期限7日前を切ったら `GET https://graph.instagram.com/refresh_access_token` で自動延長する常駐ジョブ（サーバー起動時+12時間おき）
+- [ ] customers/<実際の顧客名(digitarod以外の一般顧客)>/config.yaml を用意して MCP E2E 確認
+- [ ] 拡張予定（ユーザーからの要望あり）: 予約投稿(scheduledFor)・自動リトライ+レート制限キューイング・Webhook通知・ストーリー/リール投稿
 - [ ] Graph APIの実際のエラーレスポンス(コード190=トークン失効等)を踏まえて `core/resilience/error-taxonomy.ts` 経由のhintを調整する
+- [ ] 本番はVPSデプロイ(固定ドメイン+Traefik)を前提とする。ローカル検証で使ったngrok無料トンネルのURLは再起動のたびに変わりうる(今回は同一ドメインが再利用されたが保証はない)ため、本番のリダイレクトURI登録には使わないこと
 
 ### Facebook Developerアプリのセットアップ手順（ユーザー作業）
 
@@ -70,3 +71,5 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 - `core/auth-vault/token-store.ts` はVPS単一インスタンス・低頻度書き込み前提の簡易実装（暗号化JSONファイル1本、ファイル全体読み直し→マージ→書き込み）。複数インスタンス化するなら実DBかRedis等への移行が必要。
 - OAuthの `state` パラメータはHMAC署名+10分TTLで検証しているが、ワンタイム性（リプレイ防止）までは持たせていない。実運用で気になるなら使用済みstateの記録を追加する。
 - `core/oauth-store`的な汎用フレームワークにはせず、Instagram専用で実装した（ユーザー判断）。将来他プラットフォームでもOAuthが必要になったら、`interfaces/oauth/instagram-connect.ts` と `core/auth-vault/token-store.ts` の共通部分を抜き出して汎用化する。
+- Instagramの認可(authorize)エンドポイントは短時間に繰り返し叩くとHTTP 429(レート制限)になりやすい。ローカルでのOAuth動作確認は連続リトライせず、失敗したら数分〜十数分空けてから1回ずつ試すこと。
+- `exchangeCodeForToken`(`interfaces/oauth/instagram-connect.ts`)は `api.instagram.com/oauth/access_token` の応答が `{data:[{...}]}` 形式と `{access_token:...}` のフラット形式のどちらでも来うることを実機で確認したため両対応にしてある。

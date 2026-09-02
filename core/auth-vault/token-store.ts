@@ -78,3 +78,9 @@ export async function deleteOAuthToken(customer: string, platform: string): Prom
   delete store[keyOf(customer, platform)];
   await writeStore(store);
 }
+
+/** 自動リフレッシュジョブなどが全件走査するための一覧取得。 */
+export async function listOAuthTokens(): Promise<OAuthTokenRecord[]> {
+  const store = await readStore();
+  return Object.values(store);
+}
