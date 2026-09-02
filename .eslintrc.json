@@ -5,7 +5,7 @@
   "plugins": ["@typescript-eslint", "boundaries"],
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "env": { "node": true, "es2022": true },
-  "ignorePatterns": ["dist/", "node_modules/", "tools/scaffold/template/**"],
+  "ignorePatterns": ["dist/", "node_modules/", "tools/scaffold/template/**", "web/**"],
   "settings": {
     "import/resolver": {
       "typescript": {}

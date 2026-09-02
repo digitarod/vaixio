@@ -16,6 +16,8 @@
     "lint": "eslint .",
     "check:boundaries": "tsx scripts/check-boundaries.ts",
     "check:core-freeze": "tsx scripts/check-core-freeze.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --env-file-if-exists=.env scripts/db-migrate.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "tsx --env-file-if-exists=.env scripts/smoke.ts"
@@ -23,8 +25,11 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "ajv": "^8.20.0",
+    "cookie": "^1.1.1",
+    "drizzle-orm": "^0.45.2",
     "express": "^4.19.2",
     "js-yaml": "^4.1.0",
+    "pg": "^8.23.0",
     "tsx": "^4.16.2",
     "zod": "^3.23.8",
     "zod-to-json-schema": "^3.23.2"
@@ -34,8 +39,10 @@
     "@types/express": "^4.17.21",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.14.9",
+    "@types/pg": "^8.23.1",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^8.57.0",
     "eslint-import-resolver-typescript": "^3.10.1",
     "eslint-plugin-boundaries": "^4.2.2",

@@ -86,3 +86,18 @@ core/                →  core/ 内部のみ（外を知らない）
 - `customers/<name>/config.yaml` が顧客専用MCPサーバーの実体（§5）。
 - `allowed_tools` に無いツールは `tools/list` にも現れない。存在ごと隠す。
 - 資格情報は平文で書かない。必ず `vault://<customer>/<key>` 参照にし、実体は環境変数 `VAULT__<CUSTOMER>__<KEY>`（`core/auth-vault`）で注入する。
+
+## 11. データベース（core/db）
+
+- Postgres（Drizzle ORM）。`core/db/schema.ts`（テーブル定義）・`core/db/client.ts`（`getDb()`/`closeDb()`）・`core/db/repositories/*`（外部から使ってよいのはこれだけ。`schema.ts`/`client.ts`を直接importしない）。
+- `customers/<name>/config.yaml` は今も真実の源。`customers`テーブルはダッシュボード用の射影（`core/registry/customer-config.ts`がロードのたびにupsert）。監査ログも`logs/audit/*.jsonl`が真実の源で、`audit_events`テーブルはベストエフォートの射影（DB未接続・DB障害でMCP/RESTのレスポンスパスを壊してはいけない。必ずtry/catchで握りつぶす）。
+- マイグレーションは`npm run db:generate`で生成し`core/db/migrations/`にコミットする（core配下なので§2のコア凍結対象）。適用は`npm run db:migrate`を明示的に実行する（コンテナ起動時に暗黙実行しない）。
+- DB統合テストは`process.env.DATABASE_URL`が無い環境では`describe.skip`で自動的にスキップされる（`npm test`がDB無しでも壊れないように）。CIは`.github/workflows/ci.yml`のpostgresサービスコンテナに対して実行する。
+
+## 12. ダッシュボード（interfaces/dashboard-api, web/）
+
+- 顧客セルフサービス用の人間ログイン。MCP/REST用のBearerトークン認証とは完全に別の信頼領域（httpOnly Cookie + `dashboard_sessions`テーブル）。混ぜない。
+- パスワードは`core/security/password.ts`の`hashPassword`/`verifyPassword`（Node標準`crypto.scrypt`）を使う。argon2/bcryptはネイティブビルドが必要で本番の`node:20-slim`イメージでは使えないため採用しない。
+- v1のユーザー登録は「既に`customers/<name>/config.yaml`がコミット済みの既存顧客」限定（`customers`テーブルへの射影が無いcustomer_slugでは登録できない）。全く新規の顧客が自己プロビジョニングしてMCPまで使えるようにする機能は現状スコープ外（`ISSUES.md`参照）。
+- `web/`はVite+React SPAで、`core`/`connectors`/`interfaces`を一切importしない完全に別プロジェクト（独自の`package.json`/`tsconfig`/eslint設定を持つ。ルートの`.eslintrc.json`は`web/**`を無視する）。バックエンドとは`/dashboard-api/*`へのfetchのみで通信する。
+- Instagram連携ボタンは既存の`GET /oauth/instagram/start?customer=<slug>`へのリンクにするだけで、OAuthフロー自体を`web/`側やdashboard-api側で再実装しない。

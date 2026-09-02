@@ -130,5 +130,6 @@ export const AuditEntry = z.object({
   args_digest: z.string(),
   result: z.enum(["ok", "error"]),
   latency_ms: z.number(),
+  dry_run: z.boolean(),
 });
 export type AuditEntry = z.infer<typeof AuditEntry>;

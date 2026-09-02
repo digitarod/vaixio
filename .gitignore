@@ -2,6 +2,8 @@ node_modules/
 dist/
 logs/
 data/
+web/dist/
+web/node_modules/
 *.log
 .env
 .env.*

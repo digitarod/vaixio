@@ -128,11 +128,11 @@ export class Router {
       const result = await entry.invoke(args, { traceId, customer, dryRun });
       if (result.ok) breaker.recordSuccess();
       else breaker.recordFailure();
-      return this.finish(opts, start, result);
+      return this.finish(opts, start, result, dryRun);
     } catch (err) {
       breaker.recordFailure();
       const error = classifyError(err, { platform: entry.platform });
-      return this.finish(opts, start, { ok: false, error });
+      return this.finish(opts, start, { ok: false, error }, dryRun);
     }
   }
 
@@ -165,6 +165,7 @@ export class Router {
     opts: HandleToolCallOptions,
     start: number,
     result: ToolInvocationResult,
+    dryRun = false,
   ): Promise<ToolInvocationResult> {
     const latency_ms = Date.now() - start;
     const { toolName, args, customer, traceId } = opts;
@@ -200,6 +201,7 @@ export class Router {
         args_digest: digestArgs(args),
         result: result.ok ? "ok" : "error",
         latency_ms,
+        dry_run: dryRun,
       });
     }
 

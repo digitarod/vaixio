@@ -38,6 +38,25 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 4. 開発モード中はテスターとして自分のInstagramビジネス/クリエイターアカウントを追加すれば連携テスト可能（一般顧客に公開するにはApp Reviewでinstagram_business_content_publish等の審査が必要）
 5. アプリダッシュボードの「設定」→「基本」からApp IDとApp Secretを取得し、`.env` の `INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` に設定
 
+## P7: Postgres + 顧客セルフサービスダッシュボード + 継続開発ループ
+
+詳細な設計判断は計画時のプラン（`ISSUES.md`のD節に要点を転記）を参照。DBはPostgreSQL、
+フロントはVite+React SPA(`web/`)、founderが逐一レビューしなくて済むようPM役が定型承認する
+`/schedule`ベースの日次ループを回す。
+
+- [x] `core/db/`: Drizzle ORM、schema(customers射影/dashboard_users/dashboard_sessions/audit_events)、
+      client.ts、初回マイグレーション、repositories/*（実Postgresに対する統合テスト付き）
+- [x] `core/registry/customer-config.ts` → `customers`テーブルへのベストエフォート射影
+- [x] `core/telemetry/audit.ts` → `audit_events`テーブルへのベストエフォート射影（dry_runも記録するようAuditEntryスキーマ拡張）
+- [x] `core/security/password.ts`: パスワードハッシュ（Node標準crypto.scrypt、argon2はnode:20-slimでネイティブビルド不可のため不採用）
+- [x] `interfaces/dashboard-api/`: register/login/logout/me/connections/audit（サービス層ユニットテスト＋HTTPルーティング統合テスト）
+- [ ] `web/`: Vite+React SPAダッシュボード（サブエージェントに委任、進行中）
+- [x] `docker-compose.yml`にpostgresサービス追加、Dockerfileを2段階ビルド化（web/のビルド込み）
+- [x] `.github/workflows/ci.yml`にpostgresサービスコンテナ追加、`db:migrate`をCIに追加
+- [x] `agents/{pm,engineer,tester,designer}-prompt.md`の初版、`ISSUES.md`新規作成
+- [ ] `/schedule`で日次ループを実際に登録する
+- [ ] customers/digitarod以外の一般顧客での`/dashboard-api/auth/register`実地確認
+
 ## P2.5: LINEコネクタ
 
 - [ ] `npm run new-connector line` から開始
@@ -73,3 +92,6 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 - `core/oauth-store`的な汎用フレームワークにはせず、Instagram専用で実装した（ユーザー判断）。将来他プラットフォームでもOAuthが必要になったら、`interfaces/oauth/instagram-connect.ts` と `core/auth-vault/token-store.ts` の共通部分を抜き出して汎用化する。
 - Instagramの認可(authorize)エンドポイントは短時間に繰り返し叩くとHTTP 429(レート制限)になりやすい。ローカルでのOAuth動作確認は連続リトライせず、失敗したら数分〜十数分空けてから1回ずつ試すこと。
 - `exchangeCodeForToken`(`interfaces/oauth/instagram-connect.ts`)は `api.instagram.com/oauth/access_token` の応答が `{data:[{...}]}` 形式と `{access_token:...}` のフラット形式のどちらでも来うることを実機で確認したため両対応にしてある。
+- `customers/<name>/config.yaml` は今も真実の源のまま。`core/db`の`customers`テーブルはダッシュボード用の射影に過ぎず、Router/Registryの許可判定には一切使わない。将来「顧客が自分でallowed_toolsを編集する」機能が要るときに初めてDB主導への切り替えを検討する。
+- DB統合テスト(`core/db/**/*.test.ts`, `interfaces/dashboard-api/**/*.test.ts`)は`DATABASE_URL`未設定の環境では自動的に`describe.skip`される設計。ローカルで実行するには`docker run -d -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app -e POSTGRES_DB=app_db -p 5432:5432 postgres:16-alpine`のようなテスト用DBを立てて`DATABASE_URL`を設定し、`npm run db:migrate`を先に実行すること。
+- `web/`はルートのeslint/tsc設定から完全に除外されている(`ignorePatterns`)。ルートの`npm run lint`/`npm run build`は`web/`を一切見ない。`web/`自身のCI組み込みは`agents/tester-prompt.md`・今後のCI拡張で対応する（現状`.github/workflows/ci.yml`は`web/`をビルド/テストしていない）。

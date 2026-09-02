@@ -3,15 +3,41 @@ services:
     build: .
     image: musubi:local
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     env_file:
       - .env
     environment:
       - PORT=3000
       - MUSUBI_HOST=0.0.0.0
+      - DATABASE_URL=postgres://app:app@postgres:5432/app_db
     ports:
       - "3000:3000"
     volumes:
       - ./customers:/app/customers:ro
       - ./connectors:/app/connectors:ro
+      - musubi_data:/app/data
     # 本番は既存 Traefik（触らない）配下に musubi サービスとして参加させる想定。
     # ローカル確認用にポートを直接公開している。
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      # 汎用名。DBロール名/DB名にサービス名(将来リネームの可能性あり)を焼き込まない。
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=app_db
+    volumes:
+      - musubi_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # 本番ではポートを外部公開しない(musubiサービスからのみ内部ネットワーク経由でアクセス)。
+
+volumes:
+  musubi_pgdata:
+  musubi_data:
