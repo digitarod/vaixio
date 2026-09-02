@@ -101,3 +101,13 @@ core/                →  core/ 内部のみ（外を知らない）
 - v1のユーザー登録は「既に`customers/<name>/config.yaml`がコミット済みの既存顧客」限定（`customers`テーブルへの射影が無いcustomer_slugでは登録できない）。全く新規の顧客が自己プロビジョニングしてMCPまで使えるようにする機能は現状スコープ外（`ISSUES.md`参照）。
 - `web/`はVite+React SPAで、`core`/`connectors`/`interfaces`を一切importしない完全に別プロジェクト（独自の`package.json`/`tsconfig`/eslint設定を持つ。ルートの`.eslintrc.json`は`web/**`を無視する）。バックエンドとは`/dashboard-api/*`へのfetchのみで通信する。
 - Instagram連携ボタンは既存の`GET /oauth/instagram/start?customer=<slug>`へのリンクにするだけで、OAuthフロー自体を`web/`側やdashboard-api側で再実装しない。
+
+## 13. 実ブラウザE2Eテスト（Playwright）
+
+- `e2e/*.spec.ts`（`playwright.config.ts`）。ユニット/統合テストでは検出できない不具合
+  （実際に「一度もMCP/RESTを呼ばれていない顧客がダッシュボード登録できない」バグを発見）
+  を捕まえるための層。`npm run test:e2e`で実行する。
+- 事前に使い捨てPostgresの起動・`npm run db:migrate`・`cd web && npm run build`が必要（`agents/tester-prompt.md`にコマンド例あり）。
+- `playwright.config.ts`の`webServer.env`で`MUSUBI_ALLOWED_HOSTS`を明示的に空にしている。
+  ローカルの`.env`に値が残っていると127.0.0.1への接続が403になる事故が実際に起きたため。
+- ダッシュボードに新しい画面/フローを追加したら、対応するE2Eテストも追加すること（Tester役のPRレビューでこれを確認する）。

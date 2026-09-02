@@ -20,7 +20,9 @@
     "connectors/**/*.ts",
     "interfaces/**/*.ts",
     "scripts/**/*.ts",
-    "tools/**/*.ts"
+    "tools/**/*.ts",
+    "e2e/**/*.ts",
+    "playwright.config.ts"
   ],
   "exclude": ["node_modules", "dist", "test-reports"]
 }

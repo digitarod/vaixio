@@ -10,4 +10,6 @@ web/node_modules/
 !.env.example
 test-reports/*
 !test-reports/.gitkeep
+test-results/
+playwright-report/
 .DS_Store

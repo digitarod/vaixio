@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import yaml from "js-yaml";
 import { upsertCustomer } from "../db/repositories/customers.js";
@@ -43,4 +43,20 @@ async function projectToDb(config: CustomerConfig): Promise<void> {
 
 export function clearCustomerConfigCache(): void {
   cache.clear();
+}
+
+/**
+ * サーバー起動時に customers/ 配下を全件先読みしてDBへ射影する。
+ * これが無いと「一度もMCP/RESTで呼ばれたことのない顧客」がDB上に存在せず、
+ * ダッシュボードでの新規登録(customer_slugの存在チェック)が通らないという
+ * 鶏卵問題が起きる（実機確認済み）。DB未接続でも起動自体は失敗させない。
+ */
+export async function preloadAllCustomerConfigs(): Promise<void> {
+  let entries: string[];
+  try {
+    entries = await readdir(customersDir);
+  } catch {
+    return;
+  }
+  await Promise.all(entries.map((name) => loadCustomerConfig(name)));
 }

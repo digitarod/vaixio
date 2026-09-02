@@ -50,10 +50,14 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 - [x] `core/telemetry/audit.ts` → `audit_events`テーブルへのベストエフォート射影（dry_runも記録するようAuditEntryスキーマ拡張）
 - [x] `core/security/password.ts`: パスワードハッシュ（Node標準crypto.scrypt、argon2はnode:20-slimでネイティブビルド不可のため不採用）
 - [x] `interfaces/dashboard-api/`: register/login/logout/me/connections/audit（サービス層ユニットテスト＋HTTPルーティング統合テスト）
-- [ ] `web/`: Vite+React SPAダッシュボード（サブエージェントに委任、進行中）
-- [x] `docker-compose.yml`にpostgresサービス追加、Dockerfileを2段階ビルド化（web/のビルド込み）
-- [x] `.github/workflows/ci.yml`にpostgresサービスコンテナ追加、`db:migrate`をCIに追加
+- [x] `web/`: Vite+React SPAダッシュボード（サブエージェントに委任、独立性・ビルド・33件のテストを検証済み）
+- [x] `docker-compose.yml`にpostgresサービス追加、Dockerfileを2段階ビルド化（web/のビルド込み）。実際に`docker build`→起動→SPA/MCP/dashboard-api疎通まで確認済み
+- [x] `.github/workflows/ci.yml`にpostgresサービスコンテナ追加、`db:migrate`をCIに追加。web用ジョブも追加、両方CI green確認済み
 - [x] `agents/{pm,engineer,tester,designer}-prompt.md`の初版、`ISSUES.md`新規作成
+- [x] **実機の画面確認で発見・修正したバグ2件**（ユニット/統合テストでは検出できなかった）:
+  1. 顧客がダッシュボードで新規登録しようとしても、その顧客に対して一度もMCP/RESTのツール呼び出しが行われていないとDB射影が無く「登録されていません」と弾かれる鶏卵問題 → `core/registry/customer-config.ts`の`preloadAllCustomerConfigs()`をサーバー起動時に呼び、`customers/`配下を全件先読みするよう修正
+  2. `.env`の`MUSUBI_ALLOWED_HOSTS`が空文字列/コメントアウト漏れの状態で残っていると、空配列のallowedHostsが渡り全リクエストが403になる → `interfaces/mcp/parse-allowed-hosts.ts`を切り出し、空/空白のみの値は「未設定」として扱うよう堅牢化（ユニットテスト付き）。ローカル検証中に複数回踏んだ実際の事故
+- [x] **Playwrightによる実ブラウザE2Eテスト**(`e2e/dashboard.spec.ts`)を追加。上記バグ1はまさにこの種のテストでしか検出できなかったため、Tester役が日次で`npm run test:e2e`を回す(`agents/tester-prompt.md`更新済み)。CIにも`e2e`ジョブとして追加
 - [ ] `/schedule`で日次ループを実際に登録する
 - [ ] customers/digitarod以外の一般顧客での`/dashboard-api/auth/register`実地確認
 
