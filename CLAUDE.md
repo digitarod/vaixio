@@ -102,7 +102,14 @@ core/                →  core/ 内部のみ（外を知らない）
 - `web/`はVite+React SPAで、`core`/`connectors`/`interfaces`を一切importしない完全に別プロジェクト（独自の`package.json`/`tsconfig`/eslint設定を持つ。ルートの`.eslintrc.json`は`web/**`を無視する）。バックエンドとは`/dashboard-api/*`へのfetchのみで通信する。
 - Instagram連携ボタンは既存の`GET /oauth/instagram/start?customer=<slug>`へのリンクにするだけで、OAuthフロー自体を`web/`側やdashboard-api側で再実装しない。
 
-## 13. 実ブラウザE2Eテスト（Playwright）
+## 13. 仕様駆動開発（specs/）
+
+- 新しいツール・API・画面/フロー・DBテーブルを追加する時は、`specs/<subsystem>.md` に
+  仕様書を書く（実装前、または実装と同じPRで）。詳細は `specs/README.md`。
+- specは「外部から見た振る舞い」を書く。実装の詳細はコード自身が真実の源。
+- 実装がspecと乖離したら、気づいた側を直す。specを書かなくてよいのは小さな修正のみ。
+
+## 14. 実ブラウザE2Eテスト（Playwright）
 
 - `e2e/*.spec.ts`（`playwright.config.ts`）。ユニット/統合テストでは検出できない不具合
   （実際に「一度もMCP/RESTを呼ばれていない顧客がダッシュボード登録できない」バグを発見）
