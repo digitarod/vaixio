@@ -7,9 +7,9 @@
 - [x] リポジトリ初期化・TypeScript/Node セットアップ
 - [x] core/domain・core/ports・core/registry・core/router・core/telemetry・core/resilience・core/auth-vault
 - [x] MCPサーバー最小構成（interfaces/mcp, StreamableHTTP）＋ REST副入口（interfaces/rest）
-- [x] customers/admin スコープ ＋ musubi.health 他4本の自己診断ツール
+- [x] customers/admin スコープ ＋ vaixio.health 他4本の自己診断ツール
 - [x] eslint-plugin-boundaries による依存方向強制 ＋ check:core-freeze ＋ new-connector スキャフォールド
-- [x] 受け入れ基準確認: `/mcp/admin` に接続し `musubi.health` が返る（手動確認済み）
+- [x] 受け入れ基準確認: `/mcp/admin` に接続し `vaixio.health` が返る（手動確認済み）
 
 ## P2: Instagramコネクタ（着手中、顧客要望により最優先）
 
@@ -34,7 +34,7 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 
 1. https://developers.facebook.com/apps でアプリを作成（種類: 「Business」）
 2. 製品として「Instagram」→「API setup with Instagram login」を追加
-3. 「有効なOAuthリダイレクトURI」に `{MUSUBI_PUBLIC_BASE_URL}/oauth/instagram/callback` を登録
+3. 「有効なOAuthリダイレクトURI」に `{VAIXIO_PUBLIC_BASE_URL}/oauth/instagram/callback` を登録
 4. 開発モード中はテスターとして自分のInstagramビジネス/クリエイターアカウントを追加すれば連携テスト可能（一般顧客に公開するにはApp Reviewでinstagram_business_content_publish等の審査が必要）
 5. アプリダッシュボードの「設定」→「基本」からApp IDとApp Secretを取得し、`.env` の `INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` に設定
 
@@ -56,7 +56,7 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 - [x] `agents/{pm,engineer,tester,designer}-prompt.md`の初版、`ISSUES.md`新規作成
 - [x] **実機の画面確認で発見・修正したバグ2件**（ユニット/統合テストでは検出できなかった）:
   1. 顧客がダッシュボードで新規登録しようとしても、その顧客に対して一度もMCP/RESTのツール呼び出しが行われていないとDB射影が無く「登録されていません」と弾かれる鶏卵問題 → `core/registry/customer-config.ts`の`preloadAllCustomerConfigs()`をサーバー起動時に呼び、`customers/`配下を全件先読みするよう修正
-  2. `.env`の`MUSUBI_ALLOWED_HOSTS`が空文字列/コメントアウト漏れの状態で残っていると、空配列のallowedHostsが渡り全リクエストが403になる → `interfaces/mcp/parse-allowed-hosts.ts`を切り出し、空/空白のみの値は「未設定」として扱うよう堅牢化（ユニットテスト付き）。ローカル検証中に複数回踏んだ実際の事故
+  2. `.env`の`VAIXIO_ALLOWED_HOSTS`が空文字列/コメントアウト漏れの状態で残っていると、空配列のallowedHostsが渡り全リクエストが403になる → `interfaces/mcp/parse-allowed-hosts.ts`を切り出し、空/空白のみの値は「未設定」として扱うよう堅牢化（ユニットテスト付き）。ローカル検証中に複数回踏んだ実際の事故
 - [x] **Playwrightによる実ブラウザE2Eテスト**(`e2e/dashboard.spec.ts`)を追加。上記バグ1はまさにこの種のテストでしか検出できなかったため、Tester役が日次で`npm run test:e2e`を回す(`agents/tester-prompt.md`更新済み)。CIにも`e2e`ジョブとして追加
 - [ ] `/schedule`で日次ループを実際に登録する
 - [ ] customers/digitarod以外の一般顧客での`/dashboard-api/auth/register`実地確認
@@ -80,7 +80,7 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 ## P3: 調査基盤の強化
 
 - [ ] flight-recorder を永続化（現状プロセス内メモリのみ、再起動で消える）
-- [ ] musubi.connector.smoke を healthCheck 代替ではなく実際のsmokeテストランナーに接続
+- [ ] vaixio.connector.smoke を healthCheck 代替ではなく実際のsmokeテストランナーに接続
 - [ ] エラー分類 taxonomy を実障害ベースで拡充
 
 ## P4: ループ確立

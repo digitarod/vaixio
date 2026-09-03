@@ -33,9 +33,9 @@ function ok(data: unknown): ToolInvocationResult {
 
 function healthTool(deps: DiagnosticsDeps): CatalogEntry {
   return {
-    platform: "musubi",
+    platform: "vaixio",
     definition: {
-      name: "musubi.health",
+      name: "vaixio.health",
       description: "全コネクタの healthCheck を一括実行し、ハブ自身の稼働状態も含めて返す",
       destructive: false,
       inputSchema: { type: "object", properties: {}, required: [] },
@@ -62,9 +62,9 @@ function healthTool(deps: DiagnosticsDeps): CatalogEntry {
 
 function errorsRecentTool(): CatalogEntry {
   return {
-    platform: "musubi",
+    platform: "vaixio",
     definition: {
-      name: "musubi.errors.recent",
+      name: "vaixio.errors.recent",
       description: "直近エラー一覧を error_code 別集計つきで返す",
       destructive: false,
       inputSchema: {
@@ -85,9 +85,9 @@ function errorsRecentTool(): CatalogEntry {
 
 function traceGetTool(): CatalogEntry {
   return {
-    platform: "musubi",
+    platform: "vaixio",
     definition: {
-      name: "musubi.trace.get",
+      name: "vaixio.trace.get",
       description: "trace_id を指定して該当リクエストの全ログを取得する",
       destructive: false,
       inputSchema: {
@@ -114,9 +114,9 @@ function traceGetTool(): CatalogEntry {
 
 function replayTool(deps: DiagnosticsDeps): CatalogEntry {
   return {
-    platform: "musubi",
+    platform: "vaixio",
     definition: {
-      name: "musubi.replay",
+      name: "vaixio.replay",
       description: "フライトレコーダの記録を dry-run で再実行する",
       destructive: false,
       inputSchema: {
@@ -151,9 +151,9 @@ function replayTool(deps: DiagnosticsDeps): CatalogEntry {
 
 function connectorSmokeTool(deps: DiagnosticsDeps): CatalogEntry {
   return {
-    platform: "musubi",
+    platform: "vaixio",
     definition: {
-      name: "musubi.connector.smoke",
+      name: "vaixio.connector.smoke",
       description: "指定コネクタの実API疎通テストを実行する",
       destructive: false,
       inputSchema: {

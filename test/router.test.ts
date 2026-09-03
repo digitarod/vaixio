@@ -8,10 +8,10 @@ async function buildRouter(): Promise<Router> {
 }
 
 describe("Router.handleToolCall", () => {
-  it("executes musubi.health for the admin customer", async () => {
+  it("executes vaixio.health for the admin customer", async () => {
     const router = await buildRouter();
     const result = await router.handleToolCall({
-      toolName: "musubi.health",
+      toolName: "vaixio.health",
       args: {},
       customer: "admin",
       traceId: generateTraceId(),
@@ -34,7 +34,7 @@ describe("Router.handleToolCall", () => {
   it("rejects an unknown customer with NOT_ALLOWED", async () => {
     const router = await buildRouter();
     const result = await router.handleToolCall({
-      toolName: "musubi.health",
+      toolName: "vaixio.health",
       args: {},
       customer: "no-such-customer",
       traceId: generateTraceId(),
@@ -46,7 +46,7 @@ describe("Router.handleToolCall", () => {
   it("validates args against inputSchema and returns INVALID_INPUT (§8.4)", async () => {
     const router = await buildRouter();
     const result = await router.handleToolCall({
-      toolName: "musubi.trace.get",
+      toolName: "vaixio.trace.get",
       args: {}, // trace_id required
       customer: "admin",
       traceId: generateTraceId(),

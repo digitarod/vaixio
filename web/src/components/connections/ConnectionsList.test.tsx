@@ -14,11 +14,11 @@ describe("ConnectionsList", () => {
 
   it("renders one connection as a card", () => {
     const connections: Connection[] = [
-      { platform: "instagram", accountName: "musubi_official", expiresAt: "2027-01-01T00:00:00.000Z" },
+      { platform: "instagram", accountName: "vaixio_official", expiresAt: "2027-01-01T00:00:00.000Z" },
     ];
     render(<ConnectionsList connections={connections} customerSlug="acme-corp" />);
 
-    expect(screen.getByText("musubi_official")).toBeInTheDocument();
+    expect(screen.getByText("vaixio_official")).toBeInTheDocument();
     expect(screen.getByText("Instagram")).toBeInTheDocument();
   });
 

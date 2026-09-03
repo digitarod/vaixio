@@ -7,7 +7,7 @@ describe("customers/admin/config.yaml", () => {
     const config = await loadCustomerConfig("admin");
     expect(config).toBeDefined();
     expect(config?.mcp_path).toBe("/mcp/admin");
-    expect(config?.allowed_tools).toContain("musubi.health");
+    expect(config?.allowed_tools).toContain("vaixio.health");
   });
 
   it("returns undefined for an unknown customer (§5: 存在ごと隠す)", async () => {

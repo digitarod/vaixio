@@ -1,4 +1,4 @@
-# Musubi ツールカタログ
+# VAIXIO ツールカタログ
 
 このファイルは自動生成です。手書きで編集しないでください（`npm run docs:gen` で再生成されます）。
 
@@ -120,9 +120,9 @@
 }
 ```
 
-## musubi
+## vaixio
 
-### `musubi.health`
+### `vaixio.health`
 
 全コネクタの healthCheck を一括実行し、ハブ自身の稼働状態も含めて返す
 
@@ -136,7 +136,7 @@
 }
 ```
 
-### `musubi.errors.recent`
+### `vaixio.errors.recent`
 
 直近エラー一覧を error_code 別集計つきで返す
 
@@ -155,7 +155,7 @@
 }
 ```
 
-### `musubi.trace.get`
+### `vaixio.trace.get`
 
 trace_id を指定して該当リクエストの全ログを取得する
 
@@ -175,7 +175,7 @@ trace_id を指定して該当リクエストの全ログを取得する
 }
 ```
 
-### `musubi.replay`
+### `vaixio.replay`
 
 フライトレコーダの記録を dry-run で再実行する
 
@@ -195,7 +195,7 @@ trace_id を指定して該当リクエストの全ログを取得する
 }
 ```
 
-### `musubi.connector.smoke`
+### `vaixio.connector.smoke`
 
 指定コネクタの実API疎通テストを実行する
 

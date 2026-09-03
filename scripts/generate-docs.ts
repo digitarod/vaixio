@@ -17,7 +17,7 @@ async function main(): Promise<void> {
   await mkdir(docsDir, { recursive: true });
 
   const lines: string[] = [
-    "# Musubi ツールカタログ",
+    "# VAIXIO ツールカタログ",
     "",
     "このファイルは自動生成です。手書きで編集しないでください（`npm run docs:gen` で再生成されます）。",
     "",

@@ -1,7 +1,11 @@
-# Musubi（結び）アーキテクチャ設計書 v2.2（MCPファースト版）
+# VAIXIO アーキテクチャ設計書 v2.2（MCPファースト版）
 
-**プロダクト名**: Musubi — サービスとAIエージェントを「結ぶ」統合ハブ。リポジトリ名 `musubi`、顧客向けMCPエンドポイントは `mcp.<ドメイン>/mcp/<顧客名>` を想定。
-**版数**: v2.2（2026-09-01）— v2.1 からの変更: 商品ラインナップ（発信/チャットボット/決済）を §1.3 に追加。v2.0: プロダクト名を Musubi に決定。v1.0 → v2.0: MCPを第一の提供形態に格上げ、AI（Opus/Sonnet）による実装を前提とした疎結合・可観測性の強化
+> **2026-09-03 改名**: 開発コード名「Musubi（結び）」から正式サービス名「VAIXIO（ヴァイシオ）」に変更した。
+> 本文中の名称・リポジトリ名・ツール名前空間（`vaixio.*`）は全て新名称に統一済み。
+> 設計思想（「結ぶ」統合ハブという位置づけ）そのものは変更していない。
+
+**プロダクト名**: VAIXIO — サービスとAIエージェントを「結ぶ」統合ハブ。リポジトリ名 `vaixio`、顧客向けMCPエンドポイントは `mcp.<ドメイン>/mcp/<顧客名>` を想定。
+**版数**: v2.2（2026-09-01、2026-09-03改名反映）— v2.1 からの変更: 商品ラインナップ（発信/チャットボット/決済）を §1.3 に追加。v2.0: プロダクト名を Musubi に決定（後にVAIXIOへ改名）。v1.0 → v2.0: MCPを第一の提供形態に格上げ、AI（Opus/Sonnet）による実装を前提とした疎結合・可観測性の強化
 **目的**: 「企業の業務ツールをAIエージェントから安全に使わせる」ポジションを狙う統合ハブの設計指針。実装はClaude Code（Opus/Sonnet）に委任するため、**トラブル時に人とAIの双方が調査しやすい構造**を最重要要件とする。
 
 ---
@@ -21,13 +25,13 @@
 4. **AI実装ガードレール**: 規約は CLAUDE.md に置き、構造で強制する（lint境界・CI差分チェック・スキャフォールド）。「気をつける」ではなく「壊せない」を目指す。
 
 ### 1.3 商品ラインナップ
-Musubi は共通基盤（単一ブランド）とし、その上のパッケージとして以下を展開する。パッケージが違ってもコネクタ・監査ログ・顧客config（customers/）はすべて共有し、開発を二重化しない。顧客ブランド（例: 美容室向けサービス）の裏側基盤としてホワイトレーベル的に組み込める。
+VAIXIO は共通基盤（単一ブランド）とし、その上のパッケージとして以下を展開する。パッケージが違ってもコネクタ・監査ログ・顧客config（customers/）はすべて共有し、開発を二重化しない。顧客ブランド（例: 美容室向けサービス）の裏側基盤としてホワイトレーベル的に組み込める。
 
 | パッケージ | 内容 | 主なコネクタ/ツール | 備考 |
 |---|---|---|---|
-| **Musubi 発信** | 各プラットフォームへの配信・通知 | line.message.send / instagram.post.create / whatsapp.message.send 等の message/post 系 | コネクタそのままで最初に商品化しやすい。P2の中心 |
-| **Musubi チャットボット** | Webhook受信＋AI応答 | *.webhook.receive ＋ 頭脳（Hermes Agent / Claude API） | 既存のLINEチャットボット事業をこの構成に載せ替え、最初の事例とする |
-| **Musubi 決済** | 決済の実行・照会 | stripe.* / paypay.* 等 | destructive＋dry_run→confirm＋監査ログが最も効く領域。カード情報は保持せず決済事業者に委ねる |
+| **VAIXIO 発信** | 各プラットフォームへの配信・通知 | line.message.send / instagram.post.create / whatsapp.message.send 等の message/post 系 | コネクタそのままで最初に商品化しやすい。P2の中心 |
+| **VAIXIO チャットボット** | Webhook受信＋AI応答 | *.webhook.receive ＋ 頭脳（Hermes Agent / Claude API） | 既存のLINEチャットボット事業をこの構成に載せ替え、最初の事例とする |
+| **VAIXIO 決済** | 決済の実行・照会 | stripe.* / paypay.* 等 | destructive＋dry_run→confirm＋監査ログが最も効く領域。カード情報は保持せず決済事業者に委ねる |
 
 コネクタ実装の優先順位もこの順とする: 発信系 → チャットボット系（Webhook）→ 決済系。
 
@@ -42,7 +46,7 @@ Musubi は共通基盤（単一ブランド）とし、その上のパッケー�
  ┌────────────────────────── Hostinger VPS ──────────────────────────┐
  │ Traefik（既存・触らない）                                            │
  │   ├─ hermes-agent（既存・LINE連携済み）                              │
- │   └─ musubi（新規）                                        │
+ │   └─ vaixio（新規）                                        │
  │        interfaces/                                                 │
  │          ├─ mcp/    ← 主入口: /mcp/<customer>（顧客別スコープ）      │
  │          └─ rest/   ← 副入口: registryから自動生成                   │
@@ -64,7 +68,7 @@ Musubi は共通基盤（単一ブランド）とし、その上のパッケー�
 ## 3. リポジトリ構成
 
 ```
-musubi/
+vaixio/
 ├── CLAUDE.md                  # AI実装者向け規約（§8）。最初に読む
 ├── core/
 │   ├── domain/                # 統一スキーマ（zod）。境界のDTOはすべてここ
@@ -178,11 +182,11 @@ audit: true                         # 全呼び出しを監査ログへ
 ハブ自身のデバッグ用ツールを管理者スコープで公開する。**Claude Code や Hermes Agent が、ハブに聞くだけで障害調査できる**状態にする。
 | ツール | 内容 |
 |---|---|
-| musubi.health | 全コネクタの healthCheck 一括実行 |
-| musubi.errors.recent | 直近エラー一覧（error_code別集計つき） |
-| musubi.trace.get | trace_id 指定で該当リクエストの全ログ取得 |
-| musubi.replay | フライトレコーダの記録をdry-runで再実行 |
-| musubi.connector.smoke | 指定コネクタの実API疎通テスト |
+| vaixio.health | 全コネクタの healthCheck 一括実行 |
+| vaixio.errors.recent | 直近エラー一覧（error_code別集計つき） |
+| vaixio.trace.get | trace_id 指定で該当リクエストの全ログ取得 |
+| vaixio.replay | フライトレコーダの記録をdry-runで再実行 |
+| vaixio.connector.smoke | 指定コネクタの実API疎通テスト |
 
 ### 6.5 障害の隔離
 - コネクタは lazy-load ＋ エラーバウンダリで包む。例外は必ず taxonomy に変換され、プロセスを落とさない。
@@ -211,7 +215,7 @@ audit: true                         # 全呼び出しを監査ログへ
 4. **境界のzod検証必須**: 入口・コネクタ入出力・外部API応答の3点で必ず parse。奥で壊れる前に境界で落とす。
 5. **1ファイル1責務・小さく**: 目安200行超で分割。AIが差分を安全に当てられる粒度を保つ。
 6. **ログ規約**: console.log 禁止。telemetry ロガー経由のみ（lintで強制）。
-7. **完成の定義**: 4層テストグリーン ＋ musubi.health で healthy ＋ docs 再生成に反映、の3点。
+7. **完成の定義**: 4層テストグリーン ＋ vaixio.health で healthy ＋ docs 再生成に反映、の3点。
 
 ---
 
@@ -223,7 +227,7 @@ audit: true                         # 全呼び出しを監査ログへ
 3. BACKLOG.md 上位に着手（スキャフォールド起点）
 4. コントラクト＋fixture テスト
 5. デプロイ（Actions ビルド → VPS pull）
-6. **MCP E2E**: Cowork in Chrome で「エージェントとしてハブを使う」シナリオを実行、`musubi.errors.recent` を確認して test-reports/ に保存
+6. **MCP E2E**: Cowork in Chrome で「エージェントとしてハブを使う」シナリオを実行、`vaixio.errors.recent` を確認して test-reports/ に保存
 7. 失敗はフライトレコーダから fixture 化 → BACKLOG.md 起票 → 1 へ
 
 ---
@@ -234,7 +238,7 @@ audit: true                         # 全呼び出しを監査ログへ
 |---|---|
 | AI実装がコアを壊す | §8 のコア凍結CI・依存方向lint・スキャフォールド強制 |
 | エージェントの誤操作（顧客業務への実害） | destructive フラグ＋dry_run 2段階＋顧客別 allowed_tools |
-| 障害原因が追えない | trace_id 貫通・フライトレコーダ・musubi.trace.get |
+| 障害原因が追えない | trace_id 貫通・フライトレコーダ・vaixio.trace.get |
 | 1コネクタ障害の連鎖 | エラーバウンダリ＋サーキットブレーカで隔離 |
 | 秘匿情報のログ流出 | フライトレコーダは保存前にマスク。監査ログは args_digest（ハッシュ）のみ |
 | MCP仕様の変化 | interfaces/mcp に隔離。core は MCP を知らない構造のため差し替え可能 |
@@ -247,9 +251,9 @@ audit: true                         # 全呼び出しを監査ログへ
 
 | フェーズ | 内容 | 完了条件 |
 |---|---|---|
-| P1: 骨格 | registry / router / telemetry / MCPサーバー最小構成 / Traefik追加 | Claude から /mcp/admin に接続し musubi.health が返る |
+| P1: 骨格 | registry / router / telemetry / MCPサーバー最小構成 / Traefik追加 | Claude から /mcp/admin に接続し vaixio.health が返る |
 | P2: LINE コネクタ | 既存知見を流用。4層テスト | エージェントから line.message.send が届く（dry_run→confirm含む） |
-| P3: 調査基盤 | フライトレコーダ / エラー分類 / musubi.* 診断ツール / 監査ログ | 疑似障害を musubi.trace.get だけで原因特定できる |
+| P3: 調査基盤 | フライトレコーダ / エラー分類 / vaixio.* 診断ツール / 監査ログ | 疑似障害を vaixio.trace.get だけで原因特定できる |
 | P4: ループ確立 | /loop・docs生成・Actionsデプロイ・fixture自動化 | 1周無人完走 |
 | P5: 顧客スコープ | customers/ 方式で顧客専用MCPを発行 | config追加のみで新規顧客URL発行 |
 | P6: 商品化 | 提案パッケージ（ツールカタログ＋監査ログ見本）、Hermes Agent を第一号ユーザーとして実績化 | 初回顧客デモ |

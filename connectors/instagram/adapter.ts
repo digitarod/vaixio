@@ -41,14 +41,14 @@ const adapter: Connector = {
   },
 
   async healthCheck(): Promise<HealthStatus> {
-    const missing = ["INSTAGRAM_APP_ID", "INSTAGRAM_APP_SECRET", "MUSUBI_PUBLIC_BASE_URL", "OAUTH_STATE_SECRET"].filter(
+    const missing = ["INSTAGRAM_APP_ID", "INSTAGRAM_APP_SECRET", "VAIXIO_PUBLIC_BASE_URL", "OAUTH_STATE_SECRET"].filter(
       (name) => !process.env[name],
     );
     if (missing.length > 0) {
       return { platform: "instagram", healthy: false, detail: `未設定の環境変数: ${missing.join(", ")}` };
     }
     // 顧客個別のトークンはここでは検証しない（customer文脈が無いため）。
-    // 実際の疎通は musubi.connector.smoke や個別顧客での投稿確認で行う。
+    // 実際の疎通は vaixio.connector.smoke や個別顧客での投稿確認で行う。
     return { platform: "instagram", healthy: true };
   },
 };

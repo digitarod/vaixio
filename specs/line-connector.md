@@ -4,8 +4,8 @@
 
 ## 目的
 
-Musubi「発信」パッケージの中心ツール。既存のLINEチャットボット事業（hermes-agent）を
-Musubi基盤に載せ替える最初の一歩として、AIエージェント（MCP経由）または開発者
+VAIXIO「発信」パッケージの中心ツール。既存のLINEチャットボット事業（hermes-agent）を
+VAIXIO基盤に載せ替える最初の一歩として、AIエージェント（MCP経由）または開発者
 （REST経由）からLINEメッセージを送信できるようにする。
 
 ## 仕様
@@ -14,11 +14,11 @@ Musubi基盤に載せ替える最初の一歩として、AIエージェント（
 
 - LINE Messaging APIの**チャネルアクセストークン**（長期）を使う。OAuthのような
   顧客自己連携フローは無い（LINE Official Accountの管理画面でチャネルアクセス
-  トークンを発行し、顧客からMusubi運用者に渡してもらう運用を想定）。
+  トークンを発行し、顧客からVAIXIO運用者に渡してもらう運用を想定）。
 - `customers/<name>/config.yaml`の`credentials.line: vault://<name>/line`経由で
   `VAULT__<NAME>__LINE`環境変数に注入する（`core/auth-vault`の既存の仕組みをそのまま使う。
   Instagramのようなコネクタ単位のvaultではなく、**顧客ごと**のチャネルトークンである点が
-  Instagramとの違い。1つのMusubi運用者が複数の顧客の別々のLINE公式アカウントを
+  Instagramとの違い。1つのVAIXIO運用者が複数の顧客の別々のLINE公式アカウントを
   扱う想定のため）。
 
 ### ツール1: `line.message.send`
@@ -46,7 +46,7 @@ Musubi基盤に載せ替える最初の一歩として、AIエージェント（
 ## 既知の制約・スコープ外
 
 - **Webhook受信（ユーザーからのメッセージ受信、チャットボット機能）は今回のスコープ外**。
-  これはMusubi「チャットボット」パッケージ（P3寄り）の領域であり、署名検証
+  これはVAIXIO「チャットボット」パッケージ（P3寄り）の領域であり、署名検証
   （`X-Line-Signature`）を含む別仕様として扱う。
 - グループ/ルームへのメッセージ送信は`to`にgroupId/roomIdを渡せば動く想定だが、
   実機での確認はテキストのuserId宛のみ（fixtureテストの範囲）。

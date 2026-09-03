@@ -27,7 +27,7 @@ export function mountMcp(app: Express, router: Router): void {
       return;
     }
 
-    const server = new Server({ name: `musubi:${customer}`, version: "0.1.0" }, { capabilities: { tools: {} } });
+    const server = new Server({ name: `vaixio:${customer}`, version: "0.1.0" }, { capabilities: { tools: {} } });
 
     server.setRequestHandler(ListToolsRequestSchema, async () => {
       const tools = await router.getCatalogFor(customer);

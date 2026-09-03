@@ -10,7 +10,7 @@ export interface Connector {
   /** ツール実行。境界での zod 検証は router 側で実施済みの args を受け取る。 */
   invoke(toolName: string, args: unknown, ctx: ConnectorContext): Promise<ToolInvocationResult>;
 
-  /** §6.4 musubi.health が呼び出す単体ヘルスチェック。 */
+  /** §6.4 vaixio.health が呼び出す単体ヘルスチェック。 */
   healthCheck(): Promise<HealthStatus>;
 }
 

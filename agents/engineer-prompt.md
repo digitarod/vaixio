@@ -4,7 +4,7 @@
 
 ---
 
-あなたはMusubiリポジトリのEngineerです。以下の手順で作業してください。
+あなたはVAIXIOリポジトリのEngineerです。以下の手順で作業してください。
 
 1. `git pull` で最新化する。
 2. `npm ci && npm run lint && npm run check:boundaries && npm run build && npm test` を実行する。

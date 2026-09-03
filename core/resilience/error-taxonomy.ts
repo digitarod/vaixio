@@ -25,7 +25,7 @@ export function classifyError(err: unknown, context: { platform?: string } = {})
       code: "RATE_LIMITED",
       message,
       retriable: true,
-      hint: `${platform} のレート制限に到達。musubi.errors.recent で頻度を確認し、間隔を空けて再試行してください。`,
+      hint: `${platform} のレート制限に到達。vaixio.errors.recent で頻度を確認し、間隔を空けて再試行してください。`,
     };
   }
   if (status === 400 || status === 422) {
@@ -41,7 +41,7 @@ export function classifyError(err: unknown, context: { platform?: string } = {})
       code: "UPSTREAM_DOWN",
       message,
       retriable: true,
-      hint: `${platform} 側の障害の可能性。musubi.connector.smoke で疎通を確認してください。`,
+      hint: `${platform} 側の障害の可能性。vaixio.connector.smoke で疎通を確認してください。`,
     };
   }
 

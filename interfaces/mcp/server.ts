@@ -19,8 +19,8 @@ async function main(): Promise<void> {
   const connectors = await loadConnectors();
   const router = new Router(connectors);
 
-  const host = process.env.MUSUBI_HOST ?? "127.0.0.1";
-  const app = createMcpExpressApp({ host, allowedHosts: parseAllowedHosts(process.env.MUSUBI_ALLOWED_HOSTS) });
+  const host = process.env.VAIXIO_HOST ?? "127.0.0.1";
+  const app = createMcpExpressApp({ host, allowedHosts: parseAllowedHosts(process.env.VAIXIO_ALLOWED_HOSTS) });
 
   mountMcp(app, router);
   mountRest(app, router);
@@ -34,6 +34,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  process.stderr.write(`musubi server failed to start: ${String(err)}\n`);
+  process.stderr.write(`vaixio server failed to start: ${String(err)}\n`);
   process.exit(1);
 });

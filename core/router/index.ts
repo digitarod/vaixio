@@ -18,7 +18,7 @@ export interface HandleToolCallOptions {
   args: unknown;
   customer: string;
   traceId: string;
-  /** musubi.replay から強制的に dry-run させるための注入。通常呼び出しでは未指定。 */
+  /** vaixio.replay から強制的に dry-run させるための注入。通常呼び出しでは未指定。 */
   forceDryRun?: boolean;
 }
 
@@ -99,7 +99,7 @@ export class Router {
           code: "UPSTREAM_DOWN",
           message: `connector degraded: ${entry.platform}`,
           retriable: true,
-          hint: `musubi.connector.smoke で ${entry.platform} の疎通を確認してください`,
+          hint: `vaixio.connector.smoke で ${entry.platform} の疎通を確認してください`,
         },
       });
     }
@@ -157,7 +157,7 @@ export class Router {
       code: "INVALID_INPUT",
       message: ajv.errorsText(validator.errors),
       retriable: false,
-      hint: "inputSchema と照合してください（musubi.trace.get で送信した args を確認できます）",
+      hint: "inputSchema と照合してください（vaixio.trace.get で送信した args を確認できます）",
     };
   }
 

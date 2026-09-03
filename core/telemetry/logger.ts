@@ -2,7 +2,7 @@ import { appendFile, mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { LogEntry } from "../domain/schemas.js";
 
-const logFile = join(process.cwd(), "logs", "musubi.jsonl");
+const logFile = join(process.cwd(), "logs", "vaixio.jsonl");
 
 let dirReady: Promise<void> | undefined;
 function ensureDir(): Promise<void> {
@@ -26,7 +26,7 @@ export function getLogFilePath(): string {
   return logFile;
 }
 
-/** musubi.trace.get が使う: trace_id 一致行だけを読み出す。 */
+/** vaixio.trace.get が使う: trace_id 一致行だけを読み出す。 */
 export async function readEntriesByTraceId(traceId: string): Promise<LogEntry[]> {
   const { readFile } = await import("node:fs/promises");
   let raw: string;

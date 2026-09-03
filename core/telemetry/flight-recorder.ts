@@ -32,7 +32,7 @@ const RING_SIZE = 200;
 
 /**
  * §6.2 フライトレコーダ: コネクタ(=tool名の名前空間)ごとに直近N件を保持。
- * 失敗した呼び出しは musubi.replay / fixture 化の元データになる。
+ * 失敗した呼び出しは vaixio.replay / fixture 化の元データになる。
  */
 export class FlightRecorder {
   private readonly buffers = new Map<string, FlightRecord[]>();

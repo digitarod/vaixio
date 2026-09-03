@@ -1,5 +1,5 @@
 /**
- * プロダクト名は未確定（founder曰く "musubi.com" は取得できなかった）。
+ * プロダクト名は VAIXIO（開発コード名: Musubi）に確定済み（2026-09-03）。
  * ここを唯一の情報源とし、ヘッダー/タイトル/ページタイトルはすべてここから import する。
  * リブランド時はこのファイルだけを書き換えればよい。
  */
@@ -9,6 +9,6 @@ export interface Brand {
 }
 
 export const brand: Brand = {
-  name: "Corda",
+  name: "VAIXIO",
   tagline: "連携と稼働状況を、ひとつのダッシュボードで。",
 };

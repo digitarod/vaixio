@@ -26,7 +26,7 @@ describe("instagram adapter (fixture)", () => {
   beforeEach(() => {
     process.env.INSTAGRAM_APP_ID = "app_id";
     process.env.INSTAGRAM_APP_SECRET = "app_secret";
-    process.env.MUSUBI_PUBLIC_BASE_URL = "https://mcp.example.com";
+    process.env.VAIXIO_PUBLIC_BASE_URL = "https://mcp.example.com";
     process.env.OAUTH_STATE_SECRET = "state_secret";
   });
 
@@ -35,7 +35,7 @@ describe("instagram adapter (fixture)", () => {
     vi.restoreAllMocks();
     delete process.env.INSTAGRAM_APP_ID;
     delete process.env.INSTAGRAM_APP_SECRET;
-    delete process.env.MUSUBI_PUBLIC_BASE_URL;
+    delete process.env.VAIXIO_PUBLIC_BASE_URL;
     delete process.env.OAUTH_STATE_SECRET;
   });
 

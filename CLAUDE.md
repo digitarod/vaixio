@@ -1,6 +1,7 @@
-# Musubi — AI実装者向け規約
+# VAIXIO — AI実装者向け規約
 
-最初に読むファイル。詳細な設計思想は `architechure/musubi-architecture-v2.2.md` を参照。
+最初に読むファイル。詳細な設計思想は `architechure/vaixio-architecture-v2.2.md` を参照
+（開発コード名「Musubi」から2026-09-03に改名。ツール名前空間も`vaixio.*`に変更済み）。
 ここに書かれた規約は「気をつける」ではなく構造（lint / CI / スキャフォールド）で強制する。
 
 ## 0. まずコマンドを覚える
@@ -77,7 +78,7 @@ core/                →  core/ 内部のみ（外を知らない）
 あるコネクタ/機能が「完成」と言えるのは以下の4点を満たしたとき:
 
 1. 4層テストグリーン（共通コントラクト・fixture単体・smoke・MCP E2E）
-2. `musubi.health` で healthy
+2. `vaixio.health` で healthy
 3. `npm run docs:gen` の結果に反映されている
 4. `npm run lint` / `npm run check:boundaries` / `npm run check:core-freeze` がグリーン
 
@@ -115,6 +116,6 @@ core/                →  core/ 内部のみ（外を知らない）
   （実際に「一度もMCP/RESTを呼ばれていない顧客がダッシュボード登録できない」バグを発見）
   を捕まえるための層。`npm run test:e2e`で実行する。
 - 事前に使い捨てPostgresの起動・`npm run db:migrate`・`cd web && npm run build`が必要（`agents/tester-prompt.md`にコマンド例あり）。
-- `playwright.config.ts`の`webServer.env`で`MUSUBI_ALLOWED_HOSTS`を明示的に空にしている。
+- `playwright.config.ts`の`webServer.env`で`VAIXIO_ALLOWED_HOSTS`を明示的に空にしている。
   ローカルの`.env`に値が残っていると127.0.0.1への接続が403になる事故が実際に起きたため。
 - ダッシュボードに新しい画面/フローを追加したら、対応するE2Eテストも追加すること（Tester役のPRレビューでこれを確認する）。

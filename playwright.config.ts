@@ -27,10 +27,10 @@ export default defineConfig({
     timeout: 30_000,
     env: {
       PORT: String(PORT),
-      MUSUBI_HOST: "127.0.0.1",
-      // ローカルの.envにMUSUBI_ALLOWED_HOSTSが残っていると127.0.0.1への接続が403になる事故が
+      VAIXIO_HOST: "127.0.0.1",
+      // ローカルの.envにVAIXIO_ALLOWED_HOSTSが残っていると127.0.0.1への接続が403になる事故が
       // 実際に起きたため、E2E実行時は明示的に空にして常にlocalhostのデフォルト許可を使う。
-      MUSUBI_ALLOWED_HOSTS: "",
+      VAIXIO_ALLOWED_HOSTS: "",
     },
   },
 });

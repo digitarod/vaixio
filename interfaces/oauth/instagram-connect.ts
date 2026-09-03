@@ -10,7 +10,7 @@ const STATE_TTL_MS = 10 * 60 * 1000;
  * 顧客はここのURLをブラウザで開いてログインするだけで連携が完了し、
  * Graph APIのアクセストークンを直接扱う必要がない（core/auth-vault/token-store が保存する）。
  *
- * 必須環境変数: INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET / MUSUBI_PUBLIC_BASE_URL / OAUTH_STATE_SECRET
+ * 必須環境変数: INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET / VAIXIO_PUBLIC_BASE_URL / OAUTH_STATE_SECRET
  */
 export function mountInstagramOAuth(app: Express): void {
   app.get("/oauth/instagram/start", async (req, res) => {
@@ -75,7 +75,7 @@ export function mountInstagramOAuth(app: Express): void {
 }
 
 function callbackUrl(): string {
-  return new URL("/oauth/instagram/callback", requireEnv("MUSUBI_PUBLIC_BASE_URL")).toString();
+  return new URL("/oauth/instagram/callback", requireEnv("VAIXIO_PUBLIC_BASE_URL")).toString();
 }
 
 function requireEnv(name: string): string {
