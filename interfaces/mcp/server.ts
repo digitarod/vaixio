@@ -3,6 +3,7 @@ import { loadConnectors } from "../../core/registry/index.js";
 import { preloadAllCustomerConfigs } from "../../core/registry/customer-config.js";
 import { Router } from "../../core/router/index.js";
 import { mountDashboardApi } from "../dashboard-api/mount.js";
+import { mountGoogleAuth } from "../dashboard-api/google-auth.js";
 import { mountInstagramOAuth } from "../oauth/instagram-connect.js";
 import { startInstagramTokenRefreshJob } from "../oauth/instagram-refresh-job.js";
 import { mountRest } from "../rest/mount.js";
@@ -26,6 +27,7 @@ async function main(): Promise<void> {
   mountRest(app, router);
   mountInstagramOAuth(app);
   mountDashboardApi(app);
+  mountGoogleAuth(app);
   mountDashboardWeb(app);
   startInstagramTokenRefreshJob();
 

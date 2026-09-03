@@ -99,6 +99,7 @@ core/                →  core/ 内部のみ（外を知らない）
 
 - 顧客セルフサービス用の人間ログイン。MCP/REST用のBearerトークン認証とは完全に別の信頼領域（httpOnly Cookie + `dashboard_sessions`テーブル）。混ぜない。
 - パスワードは`core/security/password.ts`の`hashPassword`/`verifyPassword`（Node標準`crypto.scrypt`）を使う。argon2/bcryptはネイティブビルドが必要で本番の`node:20-slim`イメージでは使えないため採用しない。
+- ログイン方法はメール＋パスワードに加えGoogle（`interfaces/dashboard-api/google-auth.ts`、`specs/dashboard-google-login.md`）。`dashboard_users.password_hash`はGoogle専用アカウントのためnullable。google_id一致→email一致（アカウント統合）→customer_slugがあれば新規作成、の順で解決する。
 - v1のユーザー登録は「既に`customers/<name>/config.yaml`がコミット済みの既存顧客」限定（`customers`テーブルへの射影が無いcustomer_slugでは登録できない）。全く新規の顧客が自己プロビジョニングしてMCPまで使えるようにする機能は現状スコープ外（`ISSUES.md`参照）。
 - `web/`はVite+React SPAで、`core`/`connectors`/`interfaces`を一切importしない完全に別プロジェクト（独自の`package.json`/`tsconfig`/eslint設定を持つ。ルートの`.eslintrc.json`は`web/**`を無視する）。バックエンドとは`/dashboard-api/*`へのfetchのみで通信する。
 - Instagram連携ボタンは既存の`GET /oauth/instagram/start?customer=<slug>`へのリンクにするだけで、OAuthフロー自体を`web/`側やdashboard-api側で再実装しない。

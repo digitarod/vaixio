@@ -5,6 +5,7 @@ import { translateApiError } from "../../lib/errorMessages";
 import { Alert } from "../ui/Alert";
 import { Button } from "../ui/Button";
 import { Field } from "../ui/Field";
+import { GoogleLoginLink } from "./GoogleLoginLink";
 
 interface RegisterFormProps {
   onSuccess: (email: string) => void;
@@ -86,6 +87,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       <Button type="submit" isLoading={isSubmitting} className="mt-1 w-full">
         アカウントを作成
       </Button>
+      <div className="flex items-center gap-3 text-xs text-slate-400" role="separator">
+        <div className="h-px flex-1 bg-slate-200" />
+        または
+        <div className="h-px flex-1 bg-slate-200" />
+      </div>
+      <GoogleLoginLink customerSlug={customerSlug || undefined} />
+      <p className="text-xs text-slate-400">
+        Googleで登録する場合も、上の「お客様ID」欄への入力が必要です。
+      </p>
     </form>
   );
 }

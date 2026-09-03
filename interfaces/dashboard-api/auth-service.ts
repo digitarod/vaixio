@@ -3,7 +3,9 @@ import { createDashboardSession, deleteSession, findValidSession } from "../../c
 import {
   createDashboardUser,
   findDashboardUserByEmail,
+  findDashboardUserByGoogleId,
   findDashboardUserById,
+  linkGoogleId,
   touchLastLogin,
   type DashboardUserRecord,
 } from "../../core/db/repositories/dashboard-users.js";
@@ -51,11 +53,51 @@ export async function registerDashboardUser(input: {
 
 export async function loginDashboardUser(input: { email: string; password: string }): Promise<AuthResult> {
   const user = await findDashboardUserByEmail(input.email);
-  if (!user || !(await verifyPassword(input.password, user.passwordHash))) {
+  if (!user || !user.passwordHash || !(await verifyPassword(input.password, user.passwordHash))) {
     throw new AuthError("INVALID_CREDENTIALS", "email or password is incorrect");
   }
 
   await touchLastLogin(user.id);
+  const session = await createDashboardSession({ dashboardUserId: user.id });
+  return { sessionId: session.id, user };
+}
+
+/**
+ * §specs/dashboard-google-login.md: google_id一致→email一致(アカウント統合)→
+ * customer_slugがあれば新規作成、の優先順で処理する。
+ */
+export async function loginOrRegisterWithGoogle(input: {
+  googleId: string;
+  email: string;
+  customerSlug: string | undefined;
+}): Promise<AuthResult> {
+  const byGoogleId = await findDashboardUserByGoogleId(input.googleId);
+  if (byGoogleId) {
+    await touchLastLogin(byGoogleId.id);
+    const session = await createDashboardSession({ dashboardUserId: byGoogleId.id });
+    return { sessionId: session.id, user: byGoogleId };
+  }
+
+  const byEmail = await findDashboardUserByEmail(input.email);
+  if (byEmail) {
+    await linkGoogleId(byEmail.id, input.googleId);
+    await touchLastLogin(byEmail.id);
+    const session = await createDashboardSession({ dashboardUserId: byEmail.id });
+    return { sessionId: session.id, user: byEmail };
+  }
+
+  if (!input.customerSlug) {
+    throw new AuthError(
+      "CUSTOMER_NOT_FOUND",
+      "no existing account for this Google account and no customer_slug provided",
+    );
+  }
+  const customer = await findCustomerBySlug(input.customerSlug);
+  if (!customer) {
+    throw new AuthError("CUSTOMER_NOT_FOUND", `unknown customer: ${input.customerSlug}`);
+  }
+
+  const user = await createDashboardUser({ customerId: customer.id, email: input.email, googleId: input.googleId });
   const session = await createDashboardSession({ dashboardUserId: user.id });
   return { sessionId: session.id, user };
 }

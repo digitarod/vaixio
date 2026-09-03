@@ -4,6 +4,7 @@ import { upsertCustomer } from "../../core/db/repositories/customers.js";
 import {
   AuthError,
   loginDashboardUser,
+  loginOrRegisterWithGoogle,
   logoutDashboardUser,
   registerDashboardUser,
   resolveSession,
@@ -73,5 +74,50 @@ runIfDb("auth-service", () => {
 
     await logoutDashboardUser(sessionId);
     expect(await resolveSession(sessionId)).toBeUndefined();
+  });
+
+  describe("loginOrRegisterWithGoogle", () => {
+    it("creates a new passwordless account when a customer_slug is provided", async () => {
+      const slug = `auth-test-google-${Date.now()}-a`;
+      await upsertCustomer(slug);
+      const email = `google-new-${Date.now()}@example.com`;
+
+      const result = await loginOrRegisterWithGoogle({ googleId: `g-${Date.now()}-a`, email, customerSlug: slug });
+      expect(result.user.email).toBe(email);
+      expect(await resolveSession(result.sessionId)).toMatchObject({ email });
+    });
+
+    it("refuses a brand-new Google account with no customer_slug", async () => {
+      await expect(
+        loginOrRegisterWithGoogle({ googleId: `g-${Date.now()}-b`, email: `google-none-${Date.now()}@example.com`, customerSlug: undefined }),
+      ).rejects.toMatchObject({ code: "CUSTOMER_NOT_FOUND" } satisfies Partial<AuthError>);
+    });
+
+    it("logs an existing Google-linked account back in on a second call (matches by google_id)", async () => {
+      const slug = `auth-test-google-${Date.now()}-c`;
+      await upsertCustomer(slug);
+      const email = `google-repeat-${Date.now()}@example.com`;
+      const googleId = `g-${Date.now()}-c`;
+
+      const first = await loginOrRegisterWithGoogle({ googleId, email, customerSlug: slug });
+      const second = await loginOrRegisterWithGoogle({ googleId, email, customerSlug: undefined });
+
+      expect(second.user.id).toBe(first.user.id);
+      expect(second.sessionId).not.toBe(first.sessionId);
+    });
+
+    it("links a Google id to an existing password account with the same email instead of erroring", async () => {
+      const slug = `auth-test-google-${Date.now()}-d`;
+      await upsertCustomer(slug);
+      const email = `google-link-${Date.now()}@example.com`;
+      const passwordAccount = await registerDashboardUser({ customerSlug: slug, email, password: "hunter2hunter2" });
+
+      const linked = await loginOrRegisterWithGoogle({ googleId: `g-${Date.now()}-d`, email, customerSlug: undefined });
+      expect(linked.user.id).toBe(passwordAccount.user.id);
+
+      // 既存のパスワードログインも引き続き使える(アカウント統合であって置き換えではない)。
+      const stillWorks = await loginDashboardUser({ email, password: "hunter2hunter2" });
+      expect(stillWorks.user.id).toBe(passwordAccount.user.id);
+    });
   });
 });

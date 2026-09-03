@@ -9,13 +9,14 @@ export interface DashboardUserRecord {
   id: string;
   customerId: string;
   email: string;
-  passwordHash: string;
+  passwordHash: string | null;
+  googleId: string | null;
   emailVerifiedAt: Date | null;
   lastLoginAt: Date | null;
 }
 
 export async function createDashboardUser(
-  input: { customerId: string; email: string; passwordHash: string },
+  input: { customerId: string; email: string; passwordHash?: string; googleId?: string },
   db: NodePgDatabase<typeof schema> = getDb(),
 ): Promise<DashboardUserRecord> {
   const [row] = await db.insert(dashboardUsers).values(input).returning();
@@ -36,6 +37,22 @@ export async function findDashboardUserById(
 ): Promise<DashboardUserRecord | undefined> {
   const [row] = await db.select().from(dashboardUsers).where(eq(dashboardUsers.id, id)).limit(1);
   return row;
+}
+
+export async function findDashboardUserByGoogleId(
+  googleId: string,
+  db: NodePgDatabase<typeof schema> = getDb(),
+): Promise<DashboardUserRecord | undefined> {
+  const [row] = await db.select().from(dashboardUsers).where(eq(dashboardUsers.googleId, googleId)).limit(1);
+  return row;
+}
+
+export async function linkGoogleId(
+  id: string,
+  googleId: string,
+  db: NodePgDatabase<typeof schema> = getDb(),
+): Promise<void> {
+  await db.update(dashboardUsers).set({ googleId }).where(eq(dashboardUsers.id, id));
 }
 
 export async function touchLastLogin(id: string, db: NodePgDatabase<typeof schema> = getDb()): Promise<void> {

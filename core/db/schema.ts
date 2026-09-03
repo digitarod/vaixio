@@ -22,7 +22,9 @@ export const dashboardUsers = pgTable("dashboard_users", {
     .notNull()
     .references(() => customers.id),
   email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
+  // Google専用アカウントはパスワードを持たない(specs/dashboard-google-login.md)。
+  passwordHash: text("password_hash"),
+  googleId: text("google_id").unique(),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

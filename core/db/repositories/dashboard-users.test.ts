@@ -1,7 +1,14 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { closeDb } from "../client.js";
 import { upsertCustomer } from "./customers.js";
-import { createDashboardUser, findDashboardUserByEmail, findDashboardUserById, touchLastLogin } from "./dashboard-users.js";
+import {
+  createDashboardUser,
+  findDashboardUserByEmail,
+  findDashboardUserByGoogleId,
+  findDashboardUserById,
+  linkGoogleId,
+  touchLastLogin,
+} from "./dashboard-users.js";
 
 const runIfDb = process.env.DATABASE_URL ? describe : describe.skip;
 
@@ -46,5 +53,35 @@ runIfDb("dashboard-users repository", () => {
     await touchLastLogin(user.id);
     const updated = await findDashboardUserById(user.id);
     expect(updated?.lastLoginAt).not.toBeNull();
+  });
+
+  it("creates a passwordless account with only a googleId", async () => {
+    const customer = await upsertCustomer(`test-du-google-${Date.now()}`);
+    const user = await createDashboardUser({
+      customerId: customer.id,
+      email: `google-${Date.now()}@example.com`,
+      googleId: `g-${Date.now()}`,
+    });
+
+    expect(user.passwordHash).toBeNull();
+    expect(await findDashboardUserByGoogleId(user.googleId!)).toMatchObject({ id: user.id });
+  });
+
+  it("returns undefined for an unknown googleId", async () => {
+    expect(await findDashboardUserByGoogleId("no-such-google-id")).toBeUndefined();
+  });
+
+  it("links a googleId onto an existing password account", async () => {
+    const customer = await upsertCustomer(`test-du-link-${Date.now()}`);
+    const user = await createDashboardUser({
+      customerId: customer.id,
+      email: `link-${Date.now()}@example.com`,
+      passwordHash: "x",
+    });
+    expect(user.googleId).toBeNull();
+
+    const googleId = `g-link-${Date.now()}`;
+    await linkGoogleId(user.id, googleId);
+    expect(await findDashboardUserByGoogleId(googleId)).toMatchObject({ id: user.id });
   });
 });

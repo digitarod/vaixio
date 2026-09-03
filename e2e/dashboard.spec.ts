@@ -89,4 +89,17 @@ test.describe("顧客セルフサービスダッシュボード", () => {
 
     await expect(page).toHaveURL(/\/connections/);
   });
+
+  test("ログイン画面のGoogleボタンは顧客ID無しでstartエンドポイントへリンクする", async ({ page }) => {
+    await page.goto("/login");
+    const link = page.getByRole("link", { name: "Googleでログイン" });
+    await expect(link).toHaveAttribute("href", "/dashboard-api/auth/google/start");
+  });
+
+  test("登録画面のGoogleボタンはお客様ID入力欄の値をcustomer_slugとして付与する", async ({ page }) => {
+    await page.goto("/register");
+    await page.getByLabel("お客様ID").fill("admin");
+    const link = page.getByRole("link", { name: "Googleでログイン" });
+    await expect(link).toHaveAttribute("href", "/dashboard-api/auth/google/start?customer_slug=admin");
+  });
 });

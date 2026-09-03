@@ -5,6 +5,7 @@ import { translateApiError } from "../../lib/errorMessages";
 import { Alert } from "../ui/Alert";
 import { Button } from "../ui/Button";
 import { Field } from "../ui/Field";
+import { GoogleLoginLink } from "./GoogleLoginLink";
 
 interface LoginFormProps {
   onSuccess: (email: string) => void;
@@ -54,6 +55,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       <Button type="submit" isLoading={isSubmitting} className="mt-1 w-full">
         ログイン
       </Button>
+      <div className="flex items-center gap-3 text-xs text-slate-400" role="separator">
+        <div className="h-px flex-1 bg-slate-200" />
+        または
+        <div className="h-px flex-1 bg-slate-200" />
+      </div>
+      <GoogleLoginLink />
     </form>
   );
 }

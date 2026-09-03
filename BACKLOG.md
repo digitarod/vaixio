@@ -60,6 +60,23 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 - [x] **Playwrightによる実ブラウザE2Eテスト**(`e2e/dashboard.spec.ts`)を追加。上記バグ1はまさにこの種のテストでしか検出できなかったため、Tester役が日次で`npm run test:e2e`を回す(`agents/tester-prompt.md`更新済み)。CIにも`e2e`ジョブとして追加
 - [ ] `/schedule`で日次ループを実際に登録する
 - [ ] customers/digitarod以外の一般顧客での`/dashboard-api/auth/register`実地確認
+- [x] **ダッシュボードのGoogleログイン**（仕様: `specs/dashboard-google-login.md`）。
+      メール＋パスワードに加えて「Googleでログイン」を追加。google_id一致→email一致
+      (アカウント統合)→customer_slugがあれば新規作成、の優先順で処理。DBスキーマに
+      `dashboard_users.google_id`追加・`password_hash`をnullable化。ユニット14件・
+      E2E2件で検証済み。実際のGoogle Cloud OAuthクライアントでの本番確認は未実施
+      （`GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`の発行が必要、`.env.example`参照）
+
+## 未着手（founderからの要望、範囲確認待ち）
+
+- [ ] **LP**: VAIXIO自体の紹介ランディングページ（`web/`の顧客ダッシュボードとは別物の想定）
+- [ ] **支払い方法（月額サブスク）**: VAIXIO自体の収益化課金か、顧客が使う決済コネクタ
+      (stripe.*等)か、範囲確認待ち
+- [ ] **Google Business Profile連携**: 投稿・口コミ返信などスコープ確認待ち（`ISSUES.md`のロードマップにも記載）
+- [ ] LINEコネクタのダッシュボード対応: 現状`customers/<name>/config.yaml`の手動編集＋
+      環境変数設定が必要。Instagramのような顧客自己連携フローがLINE Messaging APIには
+      標準で無いため、ダッシュボード上で顧客が自分でチャネルアクセストークンを入力・
+      保存できる画面を検討する
 
 ## P2.5: LINEコネクタ
 

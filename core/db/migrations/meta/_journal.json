@@ -8,6 +8,13 @@
       "when": 1788350448273,
       "tag": "0000_easy_blizzard",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788430975274,
+      "tag": "0001_late_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

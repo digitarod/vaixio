@@ -25,4 +25,5 @@
 - [line-connector.md](./line-connector.md) — LINEメッセージ送信コネクタ
 - [database.md](./database.md) — Postgresスキーマとデータの真実の源の方針
 - [dashboard-api.md](./dashboard-api.md) — 顧客セルフサービスダッシュボードのバックエンドAPI
+- [dashboard-google-login.md](./dashboard-google-login.md) — ダッシュボードのGoogleログイン
 - [web-dashboard.md](./web-dashboard.md) — ダッシュボードSPA(web/)
