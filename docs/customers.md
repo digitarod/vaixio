@@ -4,3 +4,4 @@
 
 - admin
 - digitarod
+- sample-salon

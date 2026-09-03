@@ -1,0 +1,14 @@
+# 実顧客configの雛形（テンプレート）。architechure/musubi-architecture-v2.2.md §5 の例に対応。
+# 新規顧客を追加する時は、このファイルをコピーして customer/mcp_path/vault参照を書き換える。
+# credentials.line の実体は VAULT__SAMPLE_SALON__LINE 環境変数（実際の値はコミットしない）。
+customer: sample-salon
+mcp_path: /mcp/sample-salon
+allowed_tools:
+  - line.message.send
+  - instagram.post.create
+  - musubi.health
+credentials:
+  line: vault://sample-salon/line
+confirm_policy:
+  destructive: dry_run_first
+audit: true
