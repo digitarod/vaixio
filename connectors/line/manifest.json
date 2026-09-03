@@ -1,0 +1,19 @@
+{
+  "platform": "line",
+  "version": "0.1.0",
+  "tools": [
+    {
+      "name": "line.message.send",
+      "description": "指定ユーザー/グループ/ルームにLINEメッセージ(テキスト)をpushで送信する",
+      "inputSchema": "schemas/message-send.json",
+      "destructive": true
+    },
+    {
+      "name": "line.profile.get",
+      "description": "指定ユーザーのLINEプロフィール(表示名・アイコン等)を取得する",
+      "inputSchema": "schemas/profile-get.json",
+      "destructive": false
+    }
+  ],
+  "auth": { "type": "channel_token" }
+}

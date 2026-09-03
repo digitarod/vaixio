@@ -64,6 +64,62 @@
 }
 ```
 
+## line
+
+### `line.message.send`
+
+指定ユーザー/グループ/ルームにLINEメッセージ(テキスト)をpushで送信する
+
+- destructive: true
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "string",
+      "description": "送信先のLINE userId / groupId / roomId"
+    },
+    "message": {
+      "type": "string",
+      "description": "送信するテキストメッセージ",
+      "maxLength": 5000
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合 LINE へは送信せずプレビューのみ返す"
+    }
+  },
+  "required": [
+    "to",
+    "message"
+  ],
+  "additionalProperties": false
+}
+```
+
+### `line.profile.get`
+
+指定ユーザーのLINEプロフィール(表示名・アイコン等)を取得する
+
+- destructive: false
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "プロフィールを取得する対象のLINE userId"
+    }
+  },
+  "required": [
+    "userId"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## musubi
 
 ### `musubi.health`

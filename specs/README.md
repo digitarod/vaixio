@@ -22,6 +22,7 @@
 ## 現在のspec一覧
 
 - [instagram-connector.md](./instagram-connector.md) — Instagram投稿コネクタ + OAuth連携
+- [line-connector.md](./line-connector.md) — LINEメッセージ送信コネクタ
 - [database.md](./database.md) — Postgresスキーマとデータの真実の源の方針
 - [dashboard-api.md](./dashboard-api.md) — 顧客セルフサービスダッシュボードのバックエンドAPI
 - [web-dashboard.md](./web-dashboard.md) — ダッシュボードSPA(web/)

@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "プロフィールを取得する対象のLINE userId"
+    }
+  },
+  "required": ["userId"],
+  "additionalProperties": false
+}

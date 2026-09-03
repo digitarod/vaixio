@@ -63,11 +63,19 @@ OAuthで自己連携できる」自前の仕組みに切り替え済み（Zernio
 
 ## P2.5: LINEコネクタ
 
-- [ ] `npm run new-connector line` から開始
-- [ ] 既存 hermes-agent の LINE 連携実装を移植（チャネルトークン、Webhook署名検証は §1.3 チャットボットP3寄りなので今回は message.send/profile.get 中心）
-- [ ] `line.message.send`（destructive: true）/ `line.profile.get`
-- [ ] 4層テスト（contract / fixture / smoke / MCP E2E）グリーン
+仕様は`specs/line-connector.md`（実装前に書いてから着手した最初の例）。
+
+- [x] `npm run new-connector line` から開始
+- [x] `line.message.send`（destructive: true）/ `line.profile.get`をMeta Graph API方式に
+      合わせてLINE Messaging API直接呼び出しで実装（Zernioのような外部SaaSは経由しない）
+- [x] fixtureテスト8件（dry_run / 正常系 / エラー系(429, 401) / 404の専用ハンドリング / 未知ツール）
+- [x] MCP経由のdry_run呼び出し動作確認済み
+- [ ] 既存 hermes-agent の LINE 連携実装との差分確認（本セッションでは hermes-agent の
+      コードにアクセスできないため、公開のLINE Messaging API仕様ベースで新規実装した）
+- [ ] 実チャネルアクセストークンでのsmokeテスト（`LINE_SMOKE_CUSTOMER`/`LINE_SMOKE_USER_ID`
+      が必要。用意でき次第 `npm run smoke -- line`）
 - [ ] customers/sample-salon のような実顧客configの雛形を1つ用意
+- [ ] Webhook受信（チャットボット機能）はP3のスコープとして別途仕様化する
 
 ## P3: 調査基盤の強化
 

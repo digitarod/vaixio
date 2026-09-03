@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "string",
+      "description": "送信先のLINE userId / groupId / roomId"
+    },
+    "message": {
+      "type": "string",
+      "description": "送信するテキストメッセージ",
+      "maxLength": 5000
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合 LINE へは送信せずプレビューのみ返す"
+    }
+  },
+  "required": ["to", "message"],
+  "additionalProperties": false
+}
