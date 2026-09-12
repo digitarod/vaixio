@@ -4,17 +4,17 @@
   --font-sans: ui-sans-serif, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
 
-  --color-brand-50: #eef4ff;
-  --color-brand-100: #e0eafe;
-  --color-brand-200: #c7d9fd;
-  --color-brand-300: #a4bffb;
-  --color-brand-400: #7a9cf6;
-  --color-brand-500: #5678ef;
-  --color-brand-600: #3e57e2;
-  --color-brand-700: #3444c7;
-  --color-brand-800: #2f3a9f;
-  --color-brand-900: #2c357d;
-  --color-brand-950: #1c2050;
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a594fa;
+  --color-brand-500: #8b7cf6;
+  --color-brand-600: #6f5ce7;
+  --color-brand-700: #5c49cd;
+  --color-brand-800: #493aa6;
+  --color-brand-900: #392f7f;
+  --color-brand-950: #231d4f;
 }
 
 @layer base {
@@ -23,6 +23,25 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-[#f6f5f8] text-[#1d1922] antialiased;
+  }
+}
+
+@keyframes console-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  .console-enter {
+    animation: console-enter 420ms ease-out both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

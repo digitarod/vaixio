@@ -15,8 +15,8 @@ export function GoogleLoginLink({ customerSlug }: GoogleLoginLinkProps) {
   return (
     <a
       href={href}
-      className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-slate-300 bg-white
-        px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-[#ddd9e2] bg-white
+        px-4 py-3 text-sm font-medium text-[#5d5764] transition-all hover:-translate-y-0.5 hover:border-[#c9c3d2] hover:bg-[#faf9fb]"
     >
       <GoogleIcon />
       Googleでログイン

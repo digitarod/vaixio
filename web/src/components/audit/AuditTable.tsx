@@ -25,39 +25,39 @@ export function AuditTable({ events }: { events: AuditEvent[] }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-[#e6e3ea] bg-white shadow-[0_16px_45px_rgba(30,23,48,.05)]">
       <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+        <thead className="border-b border-[#e8e5ec] bg-[#faf9fb] font-mono text-[9px] uppercase tracking-[0.13em] text-[#8f8995]">
           <tr>
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="px-5 py-4 font-medium">
               ツール名
             </th>
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="px-5 py-4 font-medium">
               結果
             </th>
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="px-5 py-4 font-medium">
               種別
             </th>
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="px-5 py-4 font-medium">
               実行時間
             </th>
-            <th scope="col" className="px-4 py-3 font-medium">
+            <th scope="col" className="px-5 py-4 font-medium">
               実行日時
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-[#efecf2]">
           {events.map((event) => (
-            <tr key={event.id} className="hover:bg-slate-50/60">
-              <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-800">{event.toolName}</td>
-              <td className="px-4 py-3">
+            <tr key={event.id} className="transition-colors hover:bg-brand-50/35">
+              <td className="whitespace-nowrap px-5 py-4 font-mono text-xs font-medium text-[#3c3546]">{event.toolName}</td>
+              <td className="px-5 py-4">
                 <ResultBadge result={event.result} />
               </td>
-              <td className="px-4 py-3">
+              <td className="px-5 py-4">
                 {event.dryRun ? <Badge tone="amber">dry run</Badge> : <span className="text-slate-400">—</span>}
               </td>
-              <td className="whitespace-nowrap px-4 py-3 text-slate-500">{formatLatency(event.latencyMs)}</td>
-              <td className="whitespace-nowrap px-4 py-3 text-slate-500">{formatDateTimeJa(event.occurredAt)}</td>
+              <td className="whitespace-nowrap px-5 py-4 text-xs text-[#77717e]">{formatLatency(event.latencyMs)}</td>
+              <td className="whitespace-nowrap px-5 py-4 text-xs text-[#77717e]">{formatDateTimeJa(event.occurredAt)}</td>
             </tr>
           ))}
         </tbody>

@@ -14,17 +14,17 @@ export function Field({ label, error, helperText, id, className = "", ...rest }:
   const errorId = `${fieldId}-error`;
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={fieldId} className="text-sm font-medium text-slate-700">
+    <div className="flex flex-col gap-2">
+      <label htmlFor={fieldId} className="text-[13px] font-medium text-[#5c5663]">
         {label}
       </label>
       <input
         id={fieldId}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
-        className={`rounded-lg border px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition-colors
-          placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100
-          ${error ? "border-red-400" : "border-slate-300"} ${className}`}
+        className={`rounded-xl border bg-[#fbfafc] px-3.5 py-3 text-sm text-[#211d27] outline-none transition-all
+          placeholder:text-[#aaa4ae] focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100/70
+          ${error ? "border-red-400" : "border-[#dedbe3]"} ${className}`}
         {...rest}
       />
       {error ? (
@@ -32,7 +32,7 @@ export function Field({ label, error, helperText, id, className = "", ...rest }:
           {error}
         </p>
       ) : (
-        helperText && <p className="text-sm text-slate-400">{helperText}</p>
+        helperText && <p className="text-xs text-[#9a949f]">{helperText}</p>
       )}
     </div>
   );

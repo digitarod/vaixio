@@ -9,17 +9,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary:
-    "bg-brand-600 text-white hover:bg-brand-700 focus-visible:outline-brand-600 disabled:bg-brand-300",
+    "border border-brand-600 bg-[linear-gradient(115deg,#7665ef,#5c4bd2)] text-white shadow-[0_9px_24px_rgba(94,74,210,.22)] hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-[0_13px_30px_rgba(94,74,210,.28)] focus-visible:outline-brand-600 disabled:bg-brand-300",
   secondary:
-    "bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus-visible:outline-brand-600 disabled:text-slate-400",
-  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:outline-brand-600 disabled:text-slate-400",
+    "border border-[#dedbe4] bg-white text-[#5d5765] hover:border-[#c9c3d4] hover:bg-[#f9f8fb] focus-visible:outline-brand-600 disabled:text-slate-400",
+  ghost: "border border-transparent text-[#6f6977] hover:bg-[#efedf3] focus-visible:outline-brand-600 disabled:text-slate-400",
 };
 
 export function Button({ variant = "primary", isLoading = false, disabled, className = "", children, ...rest }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium
-        shadow-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium
+        transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
         disabled:cursor-not-allowed disabled:shadow-none ${VARIANT_CLASSES[variant]} ${className}`}
       disabled={disabled || isLoading}
       {...rest}

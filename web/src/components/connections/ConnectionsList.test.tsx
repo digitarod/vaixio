@@ -10,6 +10,10 @@ describe("ConnectionsList", () => {
     expect(screen.getByText("まだ連携済みのサービスがありません")).toBeInTheDocument();
     const link = screen.getByRole("link", { name: "Instagramを連携する" });
     expect(link).toHaveAttribute("href", "/oauth/instagram/start?customer=acme-corp");
+    const fbLink = screen.getByRole("link", { name: "Facebookページを連携する" });
+    expect(fbLink).toHaveAttribute("href", "/oauth/facebook-page/start?customer=acme-corp");
+    const gbpLink = screen.getByRole("link", { name: "Googleビジネスプロフィールを連携する" });
+    expect(gbpLink).toHaveAttribute("href", "/oauth/google-business-profile/start?customer=acme-corp");
   });
 
   it("renders one connection as a card", () => {
@@ -32,6 +36,8 @@ describe("ConnectionsList", () => {
     expect(screen.getByText("account_a")).toBeInTheDocument();
     expect(screen.getByText("account_b")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Instagramを連携する" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Facebookページを連携する" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Googleビジネスプロフィールを連携する" })).toBeInTheDocument();
   });
 
   it("shows an expiring-soon warning when expiresAt is within 7 days", () => {
