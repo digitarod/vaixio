@@ -4,6 +4,9 @@ logs/
 data/
 web/dist/
 web/node_modules/
+# marketing/ は独立したGitリポジトリ・別デプロイパイプライン(Cloudflare/OpenAI Sites)を持つ
+# 完全に別プロジェクト。メインリポジトリでは埋め込みリポジトリとして扱わず追跡しない。
+marketing/
 *.log
 .env
 .env.*
