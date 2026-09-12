@@ -6,6 +6,9 @@ import { mountDashboardApi } from "../dashboard-api/mount.js";
 import { mountGoogleAuth } from "../dashboard-api/google-auth.js";
 import { mountInstagramOAuth } from "../oauth/instagram-connect.js";
 import { startInstagramTokenRefreshJob } from "../oauth/instagram-refresh-job.js";
+import { mountGoogleBusinessProfileOAuth } from "../oauth/google-business-profile-connect.js";
+import { mountFacebookPageOAuth } from "../oauth/facebook-page-connect.js";
+import { startScheduledPostsJob } from "../scheduler/scheduled-posts-job.js";
 import { mountRest } from "../rest/mount.js";
 import { mountDashboardWeb } from "./mount-dashboard-web.js";
 import { mountMcp } from "./mount.js";
@@ -26,10 +29,13 @@ async function main(): Promise<void> {
   mountMcp(app, router);
   mountRest(app, router);
   mountInstagramOAuth(app);
+  mountGoogleBusinessProfileOAuth(app);
+  mountFacebookPageOAuth(app);
   mountDashboardApi(app);
   mountGoogleAuth(app);
   mountDashboardWeb(app);
   startInstagramTokenRefreshJob();
+  startScheduledPostsJob(router);
 
   const port = Number(process.env.PORT ?? 3000);
   app.listen(port, host);

@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したaccountId"
+    },
+    "locationId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したlocationId"
+    },
+    "pageSize": {
+      "type": "integer",
+      "description": "取得件数の上限(省略時は20、最大50)",
+      "minimum": 1,
+      "maximum": 50
+    }
+  },
+  "required": ["accountId", "locationId"],
+  "additionalProperties": false
+}

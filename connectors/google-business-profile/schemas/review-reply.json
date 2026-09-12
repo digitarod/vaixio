@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したaccountId"
+    },
+    "locationId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したlocationId"
+    },
+    "reviewId": {
+      "type": "string",
+      "description": "google_business_profile.review.list で取得したレビューID"
+    },
+    "comment": {
+      "type": "string",
+      "description": "返信本文(最大4096文字)。既に返信済みの場合は上書き更新される",
+      "maxLength": 4096
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合は実際に返信せずプレビューのみ返す"
+    }
+  },
+  "required": ["accountId", "locationId", "reviewId", "comment"],
+  "additionalProperties": false
+}

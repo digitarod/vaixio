@@ -15,6 +15,13 @@
       "when": 1788430975274,
       "tag": "0001_late_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788791773807,
+      "tag": "0002_adorable_sasquatch",
+      "breakpoints": true
     }
   ]
 }

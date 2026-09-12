@@ -6,6 +6,7 @@ import { circuitBreakers } from "../resilience/circuit-breaker.js";
 import { classifyError } from "../resilience/error-taxonomy.js";
 import type { ToolInvocationResult } from "../domain/schemas.js";
 import type { ConnectorContext } from "../ports/connector.js";
+import { buildScheduledPostsTools } from "./scheduled-posts-tools.js";
 
 export interface DiagnosticsDeps {
   connectors: LoadedConnector[];
@@ -24,6 +25,7 @@ export function buildDiagnosticTools(deps: DiagnosticsDeps): CatalogEntry[] {
     traceGetTool(),
     replayTool(deps),
     connectorSmokeTool(deps),
+    ...buildScheduledPostsTools(deps.connectors),
   ];
 }
 

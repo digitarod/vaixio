@@ -97,6 +97,9 @@ export const OAuthTokenRecord = z.object({
   platform: z.string(),
   customer: z.string(),
   accessToken: z.string(),
+  // Instagramの長期トークンはrefresh_token方式ではないためoptional。
+  // Googleのようにアクセストークンが短命(数十分〜1時間)でrefresh_token前提のプラットフォーム用。
+  refreshToken: z.string().optional(),
   accountId: z.string(),
   accountName: z.string().optional(),
   obtainedAt: z.string(),

@@ -60,3 +60,23 @@ export const auditEvents = pgTable("audit_events", {
   raw: jsonb("raw"),
   occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * AIエージェントが `vaixio.post.schedule` で登録した「未来の時刻に実行するツール呼び出し」。
+ * これ自体が唯一の真実の源（YAML/JSONLの射影ではない）。
+ * interfaces/scheduler/scheduled-posts-job.ts がポーリングしてRouter経由で実行する。
+ */
+export const scheduledPosts = pgTable("scheduled_posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  customerId: uuid("customer_id")
+    .notNull()
+    .references(() => customers.id),
+  toolName: text("tool_name").notNull(),
+  args: jsonb("args").notNull(),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+  // pending | published | failed | cancelled
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  errorMessage: text("error_message"),
+});

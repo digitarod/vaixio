@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx --env-file-if-exists=.env watch interfaces/mcp/server.ts",
+    "dev": "tsx watch --env-file-if-exists=.env interfaces/mcp/server.ts",
     "start": "tsx --env-file-if-exists=.env interfaces/mcp/server.ts",
     "docs:gen": "tsx scripts/generate-docs.ts",
     "new-connector": "tsx tools/scaffold/new-connector.ts",

@@ -2,6 +2,138 @@
 
 このファイルは自動生成です。手書きで編集しないでください（`npm run docs:gen` で再生成されます）。
 
+## facebook_page
+
+### `facebook_page.post.create`
+
+顧客がOAuthで連携済みのFacebookページのタイムラインにテキスト投稿(任意で画像1枚またはリンク)を作成する
+
+- destructive: true
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "投稿本文",
+      "minLength": 1,
+      "maxLength": 5000
+    },
+    "image_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "添付する画像1枚の公開アクセス可能なURL(任意)"
+    },
+    "link": {
+      "type": "string",
+      "format": "uri",
+      "description": "添付するリンクURL(任意。image_urlと同時指定はしない想定)"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合はFacebookへ投稿せずプレビューのみ返す"
+    }
+  },
+  "required": [
+    "message"
+  ],
+  "additionalProperties": false
+}
+```
+
+## google_business_profile
+
+### `google_business_profile.location.list`
+
+顧客がOAuthで連携済みのGoogleビジネスプロフィール上のビジネス拠点(location)一覧を取得する。review系ツールに必要なaccountId/locationIdの特定に使う
+
+- destructive: false
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {},
+  "required": [],
+  "additionalProperties": false
+}
+```
+
+### `google_business_profile.review.list`
+
+指定したビジネス拠点に投稿された口コミ(レビュー)一覧を取得する
+
+- destructive: false
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したaccountId"
+    },
+    "locationId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したlocationId"
+    },
+    "pageSize": {
+      "type": "integer",
+      "description": "取得件数の上限(省略時は20、最大50)",
+      "minimum": 1,
+      "maximum": 50
+    }
+  },
+  "required": [
+    "accountId",
+    "locationId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### `google_business_profile.review.reply`
+
+指定した口コミ(レビュー)に返信/返信内容を更新する
+
+- destructive: true
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したaccountId"
+    },
+    "locationId": {
+      "type": "string",
+      "description": "google_business_profile.location.list で取得したlocationId"
+    },
+    "reviewId": {
+      "type": "string",
+      "description": "google_business_profile.review.list で取得したレビューID"
+    },
+    "comment": {
+      "type": "string",
+      "description": "返信本文(最大4096文字)。既に返信済みの場合は上書き更新される",
+      "maxLength": 4096
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合は実際に返信せずプレビューのみ返す"
+    }
+  },
+  "required": [
+    "accountId",
+    "locationId",
+    "reviewId",
+    "comment"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## instagram
 
 ### `instagram.post.create`
@@ -211,6 +343,76 @@ trace_id を指定して該当リクエストの全ログを取得する
   },
   "required": [
     "platform"
+  ]
+}
+```
+
+### `vaixio.post.schedule`
+
+指定したツール呼び出しを未来の時刻に予約する。実行時刻になったら自動でRouter経由で実行される
+
+- destructive: true
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "tool_name": {
+      "type": "string",
+      "description": "予約実行したいツール名(例: instagram.post.create)"
+    },
+    "args": {
+      "type": "object",
+      "description": "そのツールに渡す引数"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "description": "実行時刻(ISO8601、未来の日時)"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため必須。trueなら登録せずプレビューのみ返す"
+    }
+  },
+  "required": [
+    "tool_name",
+    "args",
+    "scheduled_at"
+  ]
+}
+```
+
+### `vaixio.post.schedule.list`
+
+自分(呼び出し元顧客)の予約投稿一覧を、予約時刻の昇順で返す
+
+- destructive: false
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {},
+  "required": []
+}
+```
+
+### `vaixio.post.schedule.cancel`
+
+自分(呼び出し元顧客)の予約投稿のうち、まだ実行前(pending)のものを取り消す
+
+- destructive: false
+- inputSchema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "vaixio.post.schedule.list で取得したid"
+    }
+  },
+  "required": [
+    "id"
   ]
 }
 ```

@@ -6,7 +6,14 @@ mcp_path: /mcp/sample-salon
 allowed_tools:
   - line.message.send
   - instagram.post.create
+  - facebook_page.post.create
+  - google_business_profile.location.list
+  - google_business_profile.review.list
+  - google_business_profile.review.reply
   - vaixio.health
+  - vaixio.post.schedule
+  - vaixio.post.schedule.list
+  - vaixio.post.schedule.cancel
 credentials:
   line: vault://sample-salon/line
 confirm_policy:

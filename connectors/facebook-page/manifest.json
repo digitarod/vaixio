@@ -1,0 +1,13 @@
+{
+  "platform": "facebook_page",
+  "version": "0.1.0",
+  "tools": [
+    {
+      "name": "facebook_page.post.create",
+      "description": "顧客がOAuthで連携済みのFacebookページのタイムラインにテキスト投稿(任意で画像1枚またはリンク)を作成する",
+      "inputSchema": "schemas/post-create.json",
+      "destructive": true
+    }
+  ],
+  "auth": { "type": "oauth2_facebook_login" }
+}

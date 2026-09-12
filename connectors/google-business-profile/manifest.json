@@ -1,0 +1,25 @@
+{
+  "platform": "google_business_profile",
+  "version": "0.1.0",
+  "tools": [
+    {
+      "name": "google_business_profile.location.list",
+      "description": "顧客がOAuthで連携済みのGoogleビジネスプロフィール上のビジネス拠点(location)一覧を取得する。review系ツールに必要なaccountId/locationIdの特定に使う",
+      "inputSchema": "schemas/location-list.json",
+      "destructive": false
+    },
+    {
+      "name": "google_business_profile.review.list",
+      "description": "指定したビジネス拠点に投稿された口コミ(レビュー)一覧を取得する",
+      "inputSchema": "schemas/review-list.json",
+      "destructive": false
+    },
+    {
+      "name": "google_business_profile.review.reply",
+      "description": "指定した口コミ(レビュー)に返信/返信内容を更新する",
+      "inputSchema": "schemas/review-reply.json",
+      "destructive": true
+    }
+  ],
+  "auth": { "type": "oauth2_google_business_profile" }
+}

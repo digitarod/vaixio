@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "投稿本文",
+      "minLength": 1,
+      "maxLength": 5000
+    },
+    "image_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "添付する画像1枚の公開アクセス可能なURL(任意)"
+    },
+    "link": {
+      "type": "string",
+      "format": "uri",
+      "description": "添付するリンクURL(任意。image_urlと同時指定はしない想定)"
+    },
+    "dry_run": {
+      "type": "boolean",
+      "description": "destructive:true のため router が必須化する（confirm_policy: dry_run_first）。true の場合はFacebookへ投稿せずプレビューのみ返す"
+    }
+  },
+  "required": ["message"],
+  "additionalProperties": false
+}

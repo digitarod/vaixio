@@ -23,6 +23,9 @@
 
 - [instagram-connector.md](./instagram-connector.md) — Instagram投稿コネクタ + OAuth連携
 - [line-connector.md](./line-connector.md) — LINEメッセージ送信コネクタ
+- [google-business-profile-connector.md](./google-business-profile-connector.md) — Googleビジネスプロフィール連携（拠点一覧・口コミ取得/返信）
+- [facebook-page-connector.md](./facebook-page-connector.md) — Facebookページ投稿コネクタ
+- [scheduled-posts.md](./scheduled-posts.md) — 予約投稿(vaixio.post.schedule): AIエージェントによる未来時刻でのツール実行
 - [database.md](./database.md) — Postgresスキーマとデータの真実の源の方針
 - [dashboard-api.md](./dashboard-api.md) — 顧客セルフサービスダッシュボードのバックエンドAPI
 - [dashboard-google-login.md](./dashboard-google-login.md) — ダッシュボードのGoogleログイン
